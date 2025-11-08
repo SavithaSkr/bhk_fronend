@@ -1,0 +1,106 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Slab:wght@400;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Additional global styles or Shadcn/ui styles if you copy them */
+
+/* Root variables for global use */
+:root {
+  /* Neutral/Tailwind-like Colors for future use */
+  --color-primary: #f9a122; /* e.g., blue-600 */
+  --color-secondary: #dc2626; /* e.g., red-600 */
+  --color-background-light: #f9fafb; /* e.g., gray-50 */
+  --color-background-soft: #f3f4f6; /* e.g., gray-100 */
+  --color-text-dark: #111827; /* e.g., gray-900 */
+  --color-text-medium: #374151; /* e.g., gray-700 */
+  --color-text-light: #6b7280; /* e.g., gray-500 */
+  --color-success: #16a34a; /* e.g., green-600 */
+  --color-border: #e5e7eb; /* e.g., gray-200 */
+
+  /* Fonts */
+  --font-family-heading: "Roboto Slab", serif;
+  /* --font-family-body: "Inter", sans-serif; */
+
+  /* UI Elements */
+  --border-radius-card: 0.75rem; /* 12px */
+  --shadow-elevation-1: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* Minimal body styling for default fonts and text color */
+body {
+  font-family: var(--font-family-body);
+  color: var(--color-text-medium);
+  background-color: var(--color-background-light);
+  overflow: hidden;
+  overflow-y: auto;
+  /* scroll-behavior: smooth ; */
+}
+
+/* Hide native cursor so only the image cursor is visible */
+html,
+body {
+  /* cursor: none; */
+}
+/* Ensure Leaflet map tiles display correctly */
+.leaflet-container {
+  z-index: 0; /* Ensure map is behind other elements if needed */
+}
+
+.thornam-bg {
+  background: url(../public/assets/thoranam.png) repeat-x left top;
+}
+.navbar-header {
+  background: #ff5b00;
+  background: linear-gradient(
+    351deg,
+    rgba(255, 91, 0, 1) 0%,
+    rgba(255, 158, 6, 1) 100%
+  );
+}
+.navbar-header-two {
+  background: url(../public/assets/navbarbg.jpg) repeat-x center bottom;
+  background-size: cover;
+}
+@keyframes spinSlow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes shake {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(3deg);
+    opacity: 0.5;
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.spin-slow {
+  animation: spinSlow 50s linear infinite;
+}
+.shakeAnimation {
+  animation: shake 8s linear infinite;
+}
+
+.bgbanner {
+  background: url(../public/assets/hanuman-statue.png) no-repeat left 200px,
+    url(../public/assets/temple-statue.png) no-repeat right 220px;
+}
+.cloudbanner {
+  background: url(../public/assets/left-cloud-imgs.png) no-repeat left 310px,
+    url(../public/assets/right-cloud-imgs.png) no-repeat right 310px;
+}
+/* html,
+body {
+  cursor: none;
+} */
