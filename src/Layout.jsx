@@ -5,24 +5,68 @@ import CompactPanchangamBar from "./components/temple/CompactPanchangamBar.jsx";
 import ScrollToTopButton from "./components/ui/ScrollToTopButton.jsx";
 import EntryPopupModal from "./components/ui/EntryPopupModal.jsx";
 import CursorImageTrail from "./components/effects/CursorImageTrail.jsx";
+import { set } from "date-fns";
 
 export default function Layout({ children }) {
-  const flowerGifUrl = "/assets/falling_flowers.gif";
-
-  // Show popup on every refresh and navigation
+  const flowerGifUrl = "/assets/flowers.png"; // Use existing flower image instead of missing GIF
   const [showEntryPopup, setShowEntryPopup] = useState(true);
+  const [posterImages, setPosterImages] = useState([]);
+
+  const POSTER_FOLDER_ID = import.meta.env.VITE_GDRIVE_FOLDER_ID_POSTERS;
+  const API_KEY = import.meta.env.VITE_GDRIVE_KEY;
+
+  useEffect(() => {
+    const loadPosterImages = async () => {
+      try {
+        if (!POSTER_FOLDER_ID || !API_KEY) {
+          return;
+        }
+
+        const postersUrl = `https://www.googleapis.com/drive/v3/files?q='${POSTER_FOLDER_ID}'+in+parents+and+mimeType+contains+'image/'&key=${API_KEY}&fields=files(id,name,thumbnailLink,webViewLink)&orderBy=createdTime desc`;
+        
+        const response = await fetch(postersUrl);
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          if (data.files && data.files.length > 0) {
+            const formattedImages = data.files.slice(0, 3).map((file) => ({
+              id: file.id,
+              title: file.name,
+              image_url: `https://drive.google.com/thumbnail?id=${file.id}&sz=w800`,
+              google_drive_link: file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`,
+            }));
+            setPosterImages(formattedImages);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading poster images:", error);
+      }
+    };
+
+    loadPosterImages();
+
+    // Auto-close popup after 3 seconds
+    const timer = setTimeout(() => {
+      setShowEntryPopup(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     // Lock body scroll while popup is open
     if (showEntryPopup) {
-      const original = document.body.style.overflow;
       document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = original;
-      };
+    } else {
+      document.body.style.overflow = "unset";
     }
+    
+    return () => {
+      document.body.style.overflow = "unset";
+    };
   }, [showEntryPopup]);
-
+  
   const handleClosePopup = () => {
     setShowEntryPopup(false);
   };
@@ -60,15 +104,15 @@ export default function Layout({ children }) {
         }}
       />
 
-      {/* Entry Popup Modal (blocks content until closed) */}
+      {/* Entry Popup Modal */}
       {showEntryPopup && (
         <EntryPopupModal
-          imageSrc="/assets/popup.jpeg"
+          images={posterImages}
           onClose={handleClosePopup}
         />
       )}
 
-      {/* Only render site content after popup is closed */}
+      {/* Site Content - Always visible */}
       {!showEntryPopup && (
         <>
           {/* Compact Panchangam Bar */}

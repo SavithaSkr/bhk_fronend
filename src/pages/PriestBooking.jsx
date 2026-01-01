@@ -1,7 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
+import JotFormEmbed from "../components/JotFormEmbed.jsx";
 
 export default function PriestBookingPage() {
+  const JOT_FORM_ID = import.meta.env.VITE_JOT_FORM_ID;
   return (
     <div className="min-h-screen bg-transparent relative overflow-x-hidden">
       <div className="absolute w-[600px] h-[600px] bottom-[20%] opacity-[.2] right-[-350px] z-10">
@@ -49,7 +51,7 @@ export default function PriestBookingPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <div className="bg-white/90 backdrop-blur-sm shadow-xl rounded-lg p-1 md:p-2">
-              <iframe
+              {/* <iframe
                 src="https://form.jotform.com/252574598483069"
                 width="100%"
                 height="1500"
@@ -60,7 +62,8 @@ export default function PriestBookingPage() {
                 title="Priest Booking Form"
               >
                 Loading…
-              </iframe>
+              </iframe> */}
+              <JotFormEmbed formId={JOT_FORM_ID} formUrl={`https://form.jotform.com/${JOT_FORM_ID}`} height="700px" />
             </div>
           </motion.div>
         </div>

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ContactInquiry } from "../services/entities.js"; // Updated import path
+import useMailAPI from "../hooks/useMailAPI.js";
 // Assuming you will copy Button, Input, Textarea, Label, Select components
 // import { Button } from "@/components/ui/button";
 // import { Input } from "@/components/ui/input";
@@ -129,6 +130,7 @@ export default function ContactPage() {
     details: "",
   });
   const [formState, setFormState] = useState("idle"); // idle, submitting, submitted, error
+  const { sendEmail, loading: mailLoading, error: mailError } = useMailAPI();
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -138,24 +140,41 @@ export default function ContactPage() {
     e.preventDefault();
     setFormState("submitting");
     try {
-      await ContactInquiry.create(formData); // Uses local backend
-      setFormState("submitted");
-      // Clear form after successful submission
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        inquiry_type: "",
-        details: "",
+      // Send email using mail API
+      await sendEmail({
+        from: import.meta.env.VITE_MAIL_FROM,
+        to: formData.email,
+        subject: `Contact Inquiry: ${formData.inquiry_type}`,
+        message: `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nInquiry Type: ${formData.inquiry_type}\n\nDetails:\n${formData.details}`
       });
+      
+      setFormState("submitted");
     } catch (error) {
       console.error("Submission error:", error);
       setFormState("error");
     }
   };
 
+  // Reset form after success message
+  useEffect(() => {
+    if (formState === "submitted") {
+      const timer = setTimeout(() => {
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          inquiry_type: "",
+          details: "",
+        });
+        setFormState("idle");
+      }, 3000); // Show success for 3 seconds
+      
+      return () => clearTimeout(timer);
+    }
+  }, [formState]);
+
   // Correct coordinates for 10080 E 121st Street, Fishers, IN 46037
-  const templePosition = [39.9568, -85.9688];
+  const templePosition = [39.9658163, -85.9889459];
 
   return (
     <div className="min-h-screen bg-transparent overflow-x-hidden relative">
@@ -333,19 +352,19 @@ export default function ContactPage() {
                   <div>
                     <Button
                       type="submit"
-                      disabled={formState === "submitting"}
+                      disabled={formState === "submitting" || mailLoading}
                       className="w-full bg-orange-600 hover:bg-orange-700 text-lg py-3 flex justify-center"
                     >
-                      {formState === "submitting" ? (
+                      {(formState === "submitting" || mailLoading) ? (
                         <Loader2 className="w-5 h-5 mr-2 animate-spin pt-2" />
                       ) : (
                         <Send className="w-5 h-5 mr-2 pt-1" />
                       )}
                       Submit Inquiry
                     </Button>
-                    {formState === "error" && (
+                    {(formState === "error" || mailError) && (
                       <p className="text-red-500 text-sm mt-2 text-center">
-                        Something went wrong. Please try again.
+                        {mailError || "Something went wrong. Please try again."}
                       </p>
                     )}
                   </div>

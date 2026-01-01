@@ -4,6 +4,8 @@ import { Calendar, Video, Image as ImageIcon, Radio } from "lucide-react";
 import { VideoGalleryItem, Events } from "../services/entities.js";
 import VideoPlayer from "../components/galleries/VideoPlayer.jsx";
 import ImageLightbox from "../components/galleries/ImageLightbox.jsx";
+import CalendarMini from "../components/calendar/CalendarMini.jsx";
+import BookingCalendar from "../components/calendar/BookingCalendar.jsx";
 
 // Placeholder Shadcn components for local setup
 /*  const Button = ({ children, className, onClick }) => (
@@ -23,13 +25,16 @@ const CardContent = ({ children, className }) => (
 
 export default function EventsGalleriesPage() {
   const [activeTab, setActiveTab] = useState("events");
-  const [videos, setVideos] = useState([]);
-  const [images, setImages] = useState([]);
+  const [eventImages, setEventImages] = useState([]);
+  const [galleryImages, setGalleryImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const FOLDER_ID = "1YevEGH1Mgahqmbb0VZk7eqeqHWyIJb62";
-  const API_KEY = "AIzaSyAvCuZ0Wj_wdw4Z77PpjvrbrExOBTgH__o";
+  const GALLERY_FOLDER_ID = import.meta.env.VITE_GDRIVE_FOLDER_ID;
+  const EVENT_FOLDER_ID = import.meta.env.VITE_GDRIVE_FOLDER_ID_EVENTS;
+  const API_KEY = import.meta.env.VITE_GDRIVE_KEY;
+  const CALENDAR_ID = import.meta.env.VITE_GOOGLE_CALENDAR_ID;
+  const BOOKING_LINK = import.meta.env.VITE_BOOKING_LINK;
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -44,23 +49,41 @@ export default function EventsGalleriesPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      // Fetch images from Google Drive API
-      const response = await fetch(
-        `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents+and+mimeType+contains+'image/'&key=${API_KEY}&fields=files(id,name,thumbnailLink,webViewLink)`
-      );
+      // Load gallery images
+      if (GALLERY_FOLDER_ID && API_KEY) {
+        const galleryResponse = await fetch(
+          `https://www.googleapis.com/drive/v3/files?q='${GALLERY_FOLDER_ID}'+in+parents+and+mimeType+contains+'image/'&key=${API_KEY}&fields=files(id,name,thumbnailLink,webViewLink)`
+        );
+        if (galleryResponse.ok) {
+          const galleryData = await galleryResponse.json();
+          const formattedGalleryImages = galleryData.files.map((file) => ({
+            id: file.id,
+            title: file.name,
+            google_drive_link: `https://drive.google.com/thumbnail?id=${file.id}&sz=w600`,
+            thumbnail: `https://drive.google.com/thumbnail?id=${file.id}&sz=w300`,
+            viewLink: file.webViewLink,
+          }));
+          setGalleryImages(formattedGalleryImages);
+        }
+      }
 
-      const data = await response.json();
-      console.log(data, "Google Drive Response ✅");
-
-      const formattedImages = data.files.map((file) => ({
-        id: file.id,
-        title: file.name,
-        google_drive_link: file.thumbnailLink,
-        thumbnail: file.thumbnailLink,
-        viewLink: file.webViewLink,
-      }));
-
-      setImages(formattedImages);
+      // Load event images
+      if (EVENT_FOLDER_ID && API_KEY) {
+        const eventResponse = await fetch(
+          `https://www.googleapis.com/drive/v3/files?q='${EVENT_FOLDER_ID}'+in+parents+and+mimeType+contains+'image/'&key=${API_KEY}&fields=files(id,name,thumbnailLink,webViewLink)`
+        );
+        if (eventResponse.ok) {
+          const eventData = await eventResponse.json();
+          const formattedEventImages = eventData.files.map((file) => ({
+            id: file.id,
+            title: file.name,
+            google_drive_link: `https://drive.google.com/thumbnail?id=${file.id}&sz=w600`,
+            thumbnail: `https://drive.google.com/thumbnail?id=${file.id}&sz=w300`,
+            viewLink: file.webViewLink,
+          }));
+          setEventImages(formattedEventImages);
+        }
+      }
     } catch (error) {
       console.error("Error loading images:", error);
     }
@@ -78,11 +101,16 @@ export default function EventsGalleriesPage() {
 
     switch (activeTab) {
       case "events":
-        return <EventsSection />;
+        return ( 
+        <EventsSection 
+            images={eventImages}
+            onImageClick={setSelectedImage}
+        />
+        );
       case "images":
         return (
           <ImageGallerySection
-            images={images}
+            images={galleryImages}
             onImageClick={setSelectedImage}
           />
         );
@@ -157,6 +185,10 @@ export default function EventsGalleriesPage() {
             </div>
           </motion.div>
 
+          <div className="flex justify-center mb-8 bg-white rounded shadow-md p-1.5">
+            <BookingCalendar calendarId={CALENDAR_ID} bookingLink={BOOKING_LINK} eyebrow={'Baktha Hanuman Events'} title={'Booked Events'} subtitle={'Booked Temple Events'}/>
+          </div>
+
           {/* Tabs */}
           <div className="flex justify-center mb-8 bg-white rounded-full shadow-md p-1.5">
             <TabButton
@@ -164,7 +196,7 @@ export default function EventsGalleriesPage() {
               activeTab={activeTab}
               setActiveTab={setActiveTab}
               icon={<Calendar />}
-              label="Events Calendar"
+              label="Events "
             />
             <TabButton
               id="images"
@@ -209,65 +241,100 @@ const TabButton = ({ id, activeTab, setActiveTab, icon, label }) => (
   </button>
 );
 
-const EventsSection = () => {
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
+// const EventsSection = () => {
+//   const [events, setEvents] = useState([]);
+//   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await Events.fetchGoogleCalendarEvents();
-        if (response.success && response.events) setEvents(response.events);
-      } catch (error) {
-        console.error("Error fetching events:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEvents();
-  }, []);
 
-  if (loading)
-    return (
-      <div className="p-8 py-12 text-center bg-white/80 backdrop-blur-sm rounded-xl">
-        <div className="w-8 h-8 mx-auto mb-4 border-4 border-orange-500 rounded-full animate-spin border-t-transparent"></div>
-        <p>Loading events...</p>
-      </div>
-    );
+//   useEffect(() => {
+//     const fetchEvents = async () => {
+//       try {
+//         const response = await Events.fetchGoogleCalendarEvents();
+//         if (response.success && response.events) setEvents(response.events);
+//       } catch (error) {
+//         console.error("Error fetching events:", error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+//     fetchEvents();
+//   }, []);
 
-  if (events.length === 0)
-    return (
-      <div className="p-8 py-12 text-center text-gray-600 bg-white/80 backdrop-blur-sm rounded-xl">
-        <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-        <p>No upcoming events scheduled at this time.</p>
-      </div>
-    );
+//   if (loading)
+//     return (
+//       <div className="p-8 py-12 text-center bg-white/80 backdrop-blur-sm rounded-xl">
+//         <div className="w-8 h-8 mx-auto mb-4 border-4 border-orange-500 rounded-full animate-spin border-t-transparent"></div>
+//         <p>Loading events...</p>
+//       </div>
+//     );
 
-  return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {events.map((event) => (
-          <Card key={event.id} className="overflow-hidden shadow-md">
-            {event.image_url && (
-              <img
-                src={event.image_url}
-                alt={event.title}
-                className="object-cover w-full h-40"
-              />
-            )}
-            <CardContent>
-              <h4 className="text-lg font-bold text-gray-900">{event.title}</h4>
-              <p className="mt-1 text-sm text-gray-600">
-                {new Date(event.date).toLocaleDateString()}
-              </p>
-              <p className="text-sm text-gray-600">{event.time}</p>
-            </CardContent>
-          </Card>
+//   if (events.length === 0)
+//     return (
+//       <div className="p-8 py-12 text-center text-gray-600 bg-white/80 backdrop-blur-sm rounded-xl">
+//         <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+//         <p>No upcoming events scheduled at this time.</p>
+
+
+//       </div>
+//     );
+
+//   return (
+//     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+//       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+//         {events.map((event) => (
+//           <Card key={event.id} className="overflow-hidden shadow-md">
+//             {event.image_url && (
+//               <img
+//                 src={event.image_url}
+//                 alt={event.title}
+//                 className="object-cover w-full h-40"
+//               />
+//             )}
+//             <CardContent>
+//               <h4 className="text-lg font-bold text-gray-900">{event.title}</h4>
+//               <p className="mt-1 text-sm text-gray-600">
+//                 {new Date(event.date).toLocaleDateString()}
+//               </p>
+//               <p className="text-sm text-gray-600">{event.time}</p>
+//             </CardContent>
+//           </Card>
+//         ))}
+//       </div>
+//     </motion.div>
+//   );
+// };
+
+const EventsSection = ({ images, onImageClick }) => (
+  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+    {images.length > 0 ? (
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+        {images.map((image) => (
+          <motion.div
+            key={image.id}
+            layoutId={`image-${image.id}`}
+            whileHover={{ scale: 1.03 }}
+            onClick={() => onImageClick(image.google_drive_link)}
+            className="relative overflow-hidden rounded-lg shadow-md cursor-pointer aspect-square group"
+          >
+            <img
+              src={image.google_drive_link}
+              alt={image.title}
+              className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+            />
+            {/* <div className="absolute bottom-0 left-0 right-0 p-2 text-sm text-white transition-opacity opacity-0 bg-black/50 group-hover:opacity-100">
+              {image.title}
+            </div> */}
+          </motion.div>
         ))}
       </div>
-    </motion.div>
-  );
-};
+    ) : (
+      
+      <p className="py-8 text-center text-gray-600">
+        The Event gallery is empty. Please check back soon!
+      </p>
+    )}
+  </motion.div> 
+);
 
 const ImageGallerySection = ({ images, onImageClick }) => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>

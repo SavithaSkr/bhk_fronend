@@ -16,15 +16,15 @@ export default function PanchangamBar() {
   const loadPanchangamData = async () => {
     try {
       setLoading(true);
-      const response = await Panchangam.fetchPanchangamData(); // Updated API call
-      if (response.success) {
-        setPanchangamData(response); // The full response object contains panchangam and auspiciousDays
+      const response = await Panchangam.fetchPanchangamData();
+      setPanchangamData(response);
+      if (!response.success) {
+        setError(response.error || "Using calculated data");
       } else {
-        setError(response.error || "Failed to load Panchangam data");
-        setPanchangamData(response); // Still set data even if success is false to show mock
+        setError(null);
       }
     } catch (err) {
-      setError("Failed to load Panchangam data from API");
+      setError("Failed to load Panchangam data");
       console.error("Error loading panchangam:", err);
     } finally {
       setLoading(false);
@@ -44,13 +44,13 @@ export default function PanchangamBar() {
     );
   }
 
-  // If there's an error and no mock data in panchangamData
-  if (error || !panchangamData || !panchangamData.panchangam) {
+  // Only show error if no data is available at all
+  if (!panchangamData || !panchangamData.panchangam) {
     return (
       <div className="bg-gradient-to-r from-orange-600 to-red-600 text-white py-2">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <span className="text-sm">
-            Panchangam data temporarily unavailable. {panchangamData?.message}
+            Panchangam data temporarily unavailable
           </span>
         </div>
       </div>

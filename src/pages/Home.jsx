@@ -6,6 +6,7 @@ import { GoogleDriveImage, HeroImage, Events } from "../services/entities.js"; /
 // import { Button } from "@/components/ui/button";
 // import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "../components/ui/button";
+import CalendarMini from "../components/calendar/CalendarMini.jsx"; // Updated import path
 
 import {
   Card,
@@ -32,11 +33,13 @@ import CursorImageTrail from "../components/effects/CursorImageTrail.jsx";
 export default function HomePage() {
   const [events, setEvents] = useState([]);
   const [galleryImages, setGalleryImages] = useState([]);
+  const [eventImages, setEventImages] = useState([]);
   const [heroImages, setHeroImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [eventsLoading, setEventsLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(null);
 
-  // Fallback images if no database images are available or API fails
+  // Fallback images when no Google Drive images are available
   const fallbackImages = [
     "/assets/hanumanphoto1.jpg",
     "/assets/hanumanphoto2.jpg",
@@ -44,57 +47,207 @@ export default function HomePage() {
     "/assets/temple2.jpg",
   ];
 
+  const GALLERY_FOLDER_ID = import.meta.env.VITE_GDRIVE_FOLDER_ID;
+  const EVENT_FOLDER_ID = import.meta.env.VITE_GDRIVE_FOLDER_ID_EVENTS;
+  const POSTER_FOLDER_ID = import.meta.env.VITE_GDRIVE_FOLDER_ID_POSTERS;
+  const HERO_FOLDER_ID = import.meta.env.VITE_GDRIVE_FOLDER_ID_HERO;
+  const API_KEY = import.meta.env.VITE_GDRIVE_KEY;
+
   useEffect(() => {
     const loadGoogleCalendarEvents = async () => {
       try {
-        const response = await Events.fetchGoogleCalendarEvents(); // Updated API call
+        const response = await Events.fetchGoogleCalendarEvents();
         if (response.success && response.events) {
-          setEvents(response.events.slice(0, 3)); // Show only first 3 events
+          setEvents(response.events.slice(0, 3));
         } else {
-          console.error(
-            "Error loading Google Calendar events:",
-            response.error
-          );
-          setEvents([]); // Set empty events array on error
+          console.error("Error loading Google Calendar events:", response.error);
+          setEvents([]);
         }
       } catch (error) {
-        console.error("Error loading Google Calendar events (catch):", error);
+        console.error("Error loading Google Calendar events:", error);
         setEvents([]);
       }
       setEventsLoading(false);
     };
 
-    const loadData = async () => {
+    const loadGoogleDriveImages = async () => {
       try {
-        const [galleryData, heroImagesData] = await Promise.all([
-          GoogleDriveImage.list("-created_date", 6), // Fetches from local backend
-          HeroImage.filter({ is_active: true }, "display_order"), // Fetches from local backend
-        ]);
-        setGalleryImages(galleryData);
-        setHeroImages(heroImagesData);
-      } catch (error) {
-        console.error("Error loading data:", error);
-      }
-      setLoading(false);
+        // Use fallback images if no API key is configured
+        if (!API_KEY) { 
+          console.warn("Google Drive API key not found, using fallback images");
+          setGalleryImages(fallbackImages.map((url, index) => ({
+            id: `fallback-${index}`,
+            title: `Temple Image ${index + 1}`,
+            image_url: url,
+            google_drive_link: url,
+          })));
+          setHeroImages(fallbackImages.map((url, index) => ({
+            id: `hero-${index}`,
+            title: `Hero Image ${index + 1}`,
+            image_url: url,
+          })));
+          setEventImages(fallbackImages.map((url, index) => ({
+            id: `event-${index}`,
+            title: `Event Image ${index + 1}`,
+            image_url: url,
+            google_drive_link: url,
+          })));
+          return;
+        }
 
-      loadGoogleCalendarEvents(); // Load Google Calendar events separately
+        console.log('Loading images with API key:', API_KEY);
+        console.log('Folder IDs:', { HERO_FOLDER_ID, GALLERY_FOLDER_ID, EVENT_FOLDER_ID });
+
+        let heroLoaded = false;
+        let galleryLoaded = false;
+        let eventsLoaded = false;
+
+        // Load hero images from hero folder
+        if (HERO_FOLDER_ID) {
+          try {
+            const heroUrl = `https://www.googleapis.com/drive/v3/files?q='${HERO_FOLDER_ID}'+in+parents+and+mimeType+contains+'image/'&key=${API_KEY}&fields=files(id,name,thumbnailLink,webViewLink)`;
+            console.log('Hero API URL:', heroUrl);
+            
+            const heroResponse = await fetch(heroUrl);
+            console.log('Hero response status:', heroResponse.status);
+            
+            if (heroResponse.ok) {
+              const heroData = await heroResponse.json();
+              console.log('Hero data:', heroData);
+              
+              if (heroData.files && heroData.files.length > 0) {
+                const formattedHeroImages = heroData.files.map((file) => ({
+                  id: file.id,
+                  title: file.name,
+                  image_url: `https://drive.google.com/thumbnail?id=${file.id}&sz=w800`,
+                  google_drive_link: file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`,
+                  category: 'Hero'
+                }));
+                setHeroImages(formattedHeroImages);
+                heroLoaded = true;
+                console.log('Hero images loaded:', formattedHeroImages.length);
+              }
+            } else {
+              const errorText = await heroResponse.text();
+              console.error('Hero API error:', errorText);
+            }
+          } catch (error) {
+            console.error("Error loading hero images:", error);
+          }
+        }
+
+        // Load gallery images
+        if (GALLERY_FOLDER_ID) {
+          try {
+            const galleryUrl = `https://www.googleapis.com/drive/v3/files?q='${GALLERY_FOLDER_ID}'+in+parents+and+mimeType+contains+'image/'&key=${API_KEY}&fields=files(id,name,thumbnailLink,webViewLink)`;
+            // console.log('Gallery API URL:', galleryUrl);
+            
+            const galleryResponse = await fetch(galleryUrl);
+            // console.log('Gallery response status:', galleryResponse.status);
+            
+            if (galleryResponse.ok) {
+              const galleryData = await galleryResponse.json();
+              console.log('Gallery data:', galleryData);
+              
+              if (galleryData.files && galleryData.files.length > 0) {
+                const formattedGalleryImages = galleryData.files.map((file) => ({
+                  id: file.id,
+                  title: file.name,
+                  image_url: `https://drive.google.com/thumbnail?id=${file.id}&sz=w600`,
+                  google_drive_link: file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`,
+                  category: 'Gallery'
+                }));
+                setGalleryImages(formattedGalleryImages);
+                galleryLoaded = true;
+                // console.log('Gallery images loaded:', formattedGalleryImages.length);
+              }
+            } else {
+              const errorText = await galleryResponse.text();
+              console.error('Gallery API error:', errorText);
+            }
+          } catch (error) {
+            console.error("Error loading gallery images:", error);
+          }
+        }
+
+        // Load event images from events folder
+        if (EVENT_FOLDER_ID) {
+          try {
+            const eventsUrl = `https://www.googleapis.com/drive/v3/files?q='${EVENT_FOLDER_ID}'+in+parents+and+mimeType+contains+'image/'&key=${API_KEY}&fields=files(id,name,thumbnailLink,webViewLink)`;
+            // console.log('Events API URL:', eventsUrl);
+            
+            const eventsResponse = await fetch(eventsUrl);
+            // console.log('Events response status:', eventsResponse.status);
+            
+            if (eventsResponse.ok) {
+              const eventsData = await eventsResponse.json();
+              // console.log('Events data:', eventsData);
+              
+              if (eventsData.files && eventsData.files.length > 0) {
+                const formattedEventImages = eventsData.files.map((file) => ({
+                  id: file.id,
+                  title: file.name,
+                  image_url: `https://drive.google.com/thumbnail?id=${file.id}&sz=w600`,
+                  google_drive_link: file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`,
+                  category: 'Events'
+                }));
+                setEventImages(formattedEventImages);
+                eventsLoaded = true;
+                // console.log('Event images loaded:', formattedEventImages.length);
+              }
+            } else {
+              const errorText = await eventsResponse.text();
+              console.error('Events API error:', errorText);
+            }
+          } catch (error) {
+            console.error("Error loading event images:", error);
+          }
+        }
+
+        // Don't use fallback images if API call succeeded - let sections handle their own states
+        console.log('Image loading completed. Loaded:', { heroLoaded, galleryLoaded, eventsLoaded });
+      } catch (error) {
+        console.error("Error loading Google Drive images:", error);
+        // Use fallback images only on API error
+        setHeroImages(fallbackImages.map((url, index) => ({
+          id: `hero-${index}`,
+          title: `Hero Image ${index + 1}`,
+          image_url: url,
+        })));
+        setGalleryImages(fallbackImages.map((url, index) => ({
+          id: `fallback-${index}`,
+          title: `Temple Image ${index + 1}`,
+          image_url: url,
+          google_drive_link: url,
+        })));
+        setEventImages(fallbackImages.map((url, index) => ({
+          id: `event-${index}`,
+          title: `Event Image ${index + 1}`,
+          image_url: url,
+          google_drive_link: url,
+        })));
+      }
+    };
+
+    const loadData = async () => {
+      setLoading(true);
+      await Promise.all([loadGoogleDriveImages(), loadGoogleCalendarEvents()]);
+      setLoading(false);
     };
 
     loadData();
-  }, []); // Empty dependency array means this effect runs once after initial render
+  }, [GALLERY_FOLDER_ID, EVENT_FOLDER_ID, HERO_FOLDER_ID, API_KEY]);
 
-  // Use database images if available, otherwise use fallback images
-  const carouselImages =
-    heroImages.length > 0
-      ? heroImages.map((img) => img.image_url)
-      : fallbackImages;
+  // Use Google Drive images if available, otherwise use fallback images
+  const carouselImages = heroImages.length > 0 ? heroImages.map((img) => img.image_url) : [];
 
   // Images available in /public/assets to alternate in the trail
   const cursorImages = ["/assets/cursor.png", "/assets/cursor.png"];
 
+  const calendarId = import.meta.env.VITE_GOOGLE_CALENDAR_ID || "";
+
   return (
     <div className="min-h-screen relative bg-orange-50/95 overflow-x-hidden bgbanner ">
-      
       {/* Cursor image now added globally in Layout.jsx */}
       <div className="absolute top-[-90px] h-[250px] opacity-[1] left-[0px] z-30">
         <img
@@ -153,18 +306,32 @@ export default function HomePage() {
                     Book Puja
                   </Button>
                 </Link>
-                <Link to={createPageUrl("Donations")}>
+                <a
+                  href="https://hanumantempleindiana.square.site/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Button className="border-2 border-orange-500  hover:bg-transparent hover:text-orange-500 focus:ring-[none] bg-orange-500 px-8 py-3 text-lg rounded-full transition-colors">
                     <Coins className="w-5 h-5 mr-2" />
                     Donate
                   </Button>
-                </Link>
+                </a>
                 <Link to={createPageUrl("Volunteer")}>
                   <Button className="border-2 border-orange-500  hover:bg-transparent hover:text-orange-500 focus:ring-[none] bg-orange-500 px-8 py-3 text-lg rounded-full transition-colors">
                     <Users className="w-5 h-5 mr-2" />
                     Volunteer
                   </Button>
                 </Link>
+                <a
+                  href="https://hanumantempleindiana.square.site/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button className="border-2 border-orange-500  hover:bg-transparent hover:text-orange-500 focus:ring-[none] bg-orange-500 px-8 py-3 text-lg rounded-full transition-colors">
+                    <Heart className="w-5 h-5 mr-2" />
+                    Become a Sponsor
+                  </Button>
+                </a>
               </div>
 
               <div className="max-w-xl mx-auto lg:mx-0 bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
@@ -235,7 +402,7 @@ export default function HomePage() {
                 <Card className="h-full shadow-lg hover:shadow-xl transition-all duration-300 border-0 bg-white rounded-lg overflow-hidden group">
                   <div className="h-40 overflow-hidden">
                     <img
-                      src="/assets/Poojasponsorship.jpeg" // Local image path
+                      src="/assets/Poojasponsorship3.jpeg" // Local image path
                       alt="Puja offering"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -283,11 +450,15 @@ export default function HomePage() {
                       Support temple activities through general donations,
                       sponsorships, and seva
                     </p>
-                    <Link to={createPageUrl("Donations")}>
+                    <a
+                      href="https://hanumantempleindiana.square.site/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <Button className="border-2 border-orange-500 text-[#ea580c] hover:bg-orange-500 hover:text-orange-500 hover:bg-transparent bg-orange-500 w-full transition-colors">
                         Donate
                       </Button>
-                    </Link>
+                    </a>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -329,7 +500,8 @@ export default function HomePage() {
         </section>
 
         {/* Upcoming Events - Now from Google Calendar */}
-        <section className="py-16 px-4 relative">
+
+        {/* <section className="py-16 px-4 relative">
           <div className="absolute w-[600px] h-[600px] m-[auto] opacity-[.2] right-[55%] bottom-[0px] z-20">
             <img
               src="/assets/hanuman.png"
@@ -438,66 +610,195 @@ export default function HomePage() {
               </div>
             )}
           </div>
-        </section>
+        </section> */}
 
-        {/* Gallery Preview */}
-        {galleryImages.length > 0 && (
-          <section className="py-16 px-4 bg-orange-50/95 backdrop-blur-sm">
-            <div className="max-w-6xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                viewport={{ once: true }}
-                className="text-center mb-12"
-              >
-                <h2 className="text-4xl font-bold text-gray-800 mb-4">
-                  Temple Gallery
-                </h2>
-                <p className="text-xl text-gray-600">
-                  Glimpses of our sacred temple and community events
-                </p>
-              </motion.div>
+        <section className="py-16 px-4 bg-white">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-4xl font-bold text-gray-800 mb-4">
+                Schedules & Events
+              </h2>
+              <p className="text-xl text-gray-600">
+                Stay updated with our temple calendar and event gallery
+              </p>
+            </motion.div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {galleryImages.map((image, index) => (
-                  <motion.div
-                    key={image.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8, delay: index * 0.05 }}
-                    viewport={{ once: true }}
-                    className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    <img
-                      src={image.google_drive_link} // This will now come from your local backend, mapping to /assets
-                      alt={image.title}
-                      className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                      <div className="p-4 text-white">
-                        <h4 className="font-semibold">{image.title}</h4>
-                        <p className="text-sm text-gray-200">
-                          {image.category}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
+            <div className="flex flex-col lg:flex-row gap-8 items-start">
+              {/* LEFT SIDE – CALENDAR */}
+              <div className="w-full lg:w-1/3">
+                <div className="p-4 rounded-xl shadow-lg border bg-white">
+                  <CalendarMini calendarId={calendarId} height={500} />
+                </div>
               </div>
 
-              <div className="text-center mt-12">
-                <Link to={createPageUrl("EventsGalleries", { tab: "images" })}>
-                  {" "}
-                  {/* Example of passing params */}
-                  <Button variant="outline" className="px-8 py-3 text-lg">
-                    View Full Gallery
-                  </Button>
-                </Link>
+              {/* RIGHT SIDE – EVENT PHOTOS */}
+              <div className="w-full lg:w-2/3">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <div className="mb-4">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Recent Events</h3>
+                    <p className="text-gray-600">Images from our latest temple events and celebrations</p>
+                  </div>
+                  
+                  {/* IMAGE GRID - Always show Google Drive images if loaded */}
+                  <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
+                    {eventImages.length > 0 ? (
+                      eventImages.slice(0, 6).map((image) => (
+                        <motion.div
+                          key={image.id}
+                          whileHover={{ scale: 1.05 }}
+                          onClick={() => setSelectedImage(image)}
+                          className="relative overflow-hidden rounded-lg shadow-md cursor-pointer aspect-square group"
+                        >
+                          <img
+                            src={image.image_url}
+                            alt={image.title}
+                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+                          />
+                        </motion.div>
+                      ))
+                    ) : (
+                      // Show fallback images only if no Google Drive images
+                      fallbackImages.slice(0, 4).map((image, index) => (
+                        <motion.div
+                          key={`fallback-${index}`}
+                          whileHover={{ scale: 1.05 }}
+                          className="relative overflow-hidden rounded-lg shadow-md aspect-square group"
+                        >
+                          <img
+                            src={image}
+                            alt={`Temple Image ${index + 1}`}
+                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+                          />
+                        </motion.div>
+                      ))
+                    )}
+                  </div>
+
+                  {/* SPONSORSHIP BUTTON */}
+                  <div className="mt-8 text-center">
+                    <a
+                      href="https://hanumantempleindiana.square.site/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="float-start inline-block border-2 border-orange-500 hover:bg-transparent hover:text-orange-500 bg-orange-500 text-white px-8 py-3 text-lg rounded-full transition-colors"
+                    >
+                      🤝 Become a Sponsor
+                    </a>
+                  </div>
+                </motion.div>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
+
+        {/* Image Popup Modal */}
+        {selectedImage && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-95 z-50"
+            onClick={() => setSelectedImage(null)}
+          >
+            <div 
+              className="relative w-full h-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header with close button */}
+              <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 z-10">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-bold">{selectedImage.title}</h3>
+                  <button
+                    onClick={() => setSelectedImage(null)}
+                    className="text-white hover:text-gray-200 text-3xl font-bold transition-colors"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+              
+              {/* Image container */}
+              <div className="w-full h-full pt-16 flex items-center justify-center">
+                <img
+                  src={selectedImage.image_url}
+                  alt={selectedImage.title}
+                  className="max-w-[95%] max-h-[90%] object-contain"
+                />
+              </div>
+            </div>
+          </div>
         )}
+
+        {/* Gallery Preview */}
+        <section className="py-16 px-4 bg-orange-50/95 backdrop-blur-sm">
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-4xl font-bold text-gray-800 mb-4">
+                Temple Gallery
+              </h2>
+              <p className="text-xl text-gray-600">
+                Glimpses of our sacred temple and community events
+              </p>
+            </motion.div>
+
+            {/* Show gallery images if available, otherwise show fallback */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {(galleryImages.length > 0 ? galleryImages : fallbackImages.map((url, index) => ({
+                id: `fallback-${index}`,
+                title: `Temple Image ${index + 1}`,
+                image_url: url,
+                google_drive_link: url,
+                category: 'Gallery'
+              }))).map((image, index) => (
+                <motion.div
+                  key={image.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: index * 0.05 }}
+                  viewport={{ once: true }}
+                  className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <img
+                    src={image.image_url}
+                    alt={image.title}
+                    className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                    <div className="p-4 text-white">
+                      <h4 className="font-semibold">{image.title}</h4>
+                      <p className="text-sm text-gray-200">
+                        {image.category}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="text-center mt-12">
+              <Link to={createPageUrl("EventsGalleries", { tab: "images" })}>
+                {" "}
+                {/* Example of passing params */}
+                <Button variant="outline" className="px-8 py-3 text-lg">
+                  View Full Gallery
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );
