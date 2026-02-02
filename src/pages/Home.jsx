@@ -338,21 +338,21 @@ export default function HomePage() {
                 <div className="grid md:grid-cols-3 gap-4 text-center">
                   <div className="flex items-center justify-center gap-2 text-gray-800">
                     <Clock className="w-5 h-5 text-orange-500" />
-                    <div className="text-sm">
+                    <div className="text-md">
                       <div className="font-semibold">Daily Open</div>
                       <div>9AM-11:30AM, 6PM-8:30PM</div>
                     </div>
                   </div>
                   <div className="flex items-center justify-center gap-2 text-gray-800">
                     <Phone className="w-5 h-5 text-orange-500" />
-                    <div className="text-sm">
+                    <div className="text-md">
                       <div className="font-semibold">Contact</div>
                       <div>248-525-8917</div>
                     </div>
                   </div>
                   <div className="flex items-center justify-center gap-2 text-gray-800">
                     <MapPin className="w-5 h-5 text-orange-500" />
-                    <div className="text-sm">
+                    <div className="text-md">
                       <div className="font-semibold">Location</div>
                       <div>Fishers, IN</div>
                     </div>
@@ -612,7 +612,7 @@ export default function HomePage() {
           </div>
         </section> */}
 
-        <section className="py-16 px-4 bg-white">
+        <section className="py-16 px-4 bg-white ">
           <div className="max-w-7xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -650,7 +650,7 @@ export default function HomePage() {
                   </div>
                   
                   {/* IMAGE GRID - Always show Google Drive images if loaded */}
-                  <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
+                  <div className="grid grid-cols-2 gap-4 md:grid-cols-2 relative z-30">
                     {eventImages.length > 0 ? (
                       eventImages.slice(0, 6).map((image) => (
                         <motion.div
@@ -792,7 +792,7 @@ export default function HomePage() {
               <Link to={createPageUrl("EventsGalleries", { tab: "images" })}>
                 {" "}
                 {/* Example of passing params */}
-                <Button variant="outline" className="px-8 py-3 text-lg">
+                <Button variant="outline" className="float-center inline-block border-2 border-orange-500 hover:bg-transparent hover:text-orange-500 bg-orange-500 text-white px-8 py-3 text-lg rounded-full transition-colors">
                   View Full Gallery
                 </Button>
               </Link>

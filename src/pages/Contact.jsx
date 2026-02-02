@@ -178,7 +178,21 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-transparent overflow-x-hidden relative">
-      <div className="absolute w-[600px] h-[600px] bottom-[20%] opacity-[.2] right-[-350px] z-10">
+           <div className="absolute top-[-90px] h-[250px] opacity-[1] left-[0px] z-30">
+        <img
+          src="/assets/flowers.png"
+          alt="flower"
+          className="w-[100%] h-[100%]"
+        />
+      </div>
+      <div className="absolute  top-[-90px] h-[250px] opacity-[1] right-[0px] z-30">
+        <img
+          src="/assets/r-flowers.png"
+          alt="flower"
+          className="w-[100%] h-[100%] "
+        />
+      </div>
+      <div className="absolute w-[600px] h-[600px] bottom-[20%] opacity-[.2] right-[-350px] z-8">
         <img
           src="/assets/rotatebg.png"
           alt=""
@@ -238,30 +252,7 @@ export default function ContactPage() {
                 </div>
               </div>
               <div className="h-80 w-full rounded-xl shadow-lg overflow-hidden">
-                <MapContainer
-                  center={templePosition}
-                  zoom={15}
-                  scrollWheelZoom={false}
-                  className="h-full w-full"
-                >
-                  <TileLayer
-                    attribution='&copy; <a href__="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
-                  <Marker position={templePosition}>
-                    <Popup>
-                      <div className="text-center">
-                        <strong>Sri Bhaktha Hanuman Temple</strong>
-                        <br />
-                        10080 E 121st Street, Suite 130A
-                        <br />
-                        Fishers, IN 46037
-                        <br />
-                        <em>Indiana</em>
-                      </div>
-                    </Popup>
-                  </Marker>
-                </MapContainer>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3057.907516940122!2d-85.99152082559179!3d39.9658203829624!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8814cb4d328b07dd%3A0xb1312d67149b9c93!2sSri%20Bhaktha%20Hanuman%20Temple%20%26%20Cultural%20Center!5e0!3m2!1sen!2sin!4v1770049630777!5m2!1sen!2sin" frameborder="0" width={"100%"} height={"100%"}></iframe>
               </div>
             </motion.div>
 

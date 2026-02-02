@@ -1,17 +1,22 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "../../utils/createPageUrl.js";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 
 export default function Navbar() {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isBookingDropdownOpen, setIsBookingDropdownOpen] = useState(false);
+
+  const bookingOptions = [
+    { name: "Puja Booking", url: createPageUrl("PujaBooking") },
+    { name: "Priest Booking", url: createPageUrl("PriestBooking") },
+  ];
 
   const allNavigation = [
     { name: "Home", url: createPageUrl("Home") },
     { name: "About Us", url: createPageUrl("About") },
-    { name: "Puja Booking", url: createPageUrl("PujaBooking") },
-    { name: "Priest Booking", url: createPageUrl("PriestBooking") },
+    { name: "Booking", isDropdown: true, options: bookingOptions },
     { name: "Donations", target: "_blank", url: "https://hanumantempleindiana.square.site/" },
     { name: "Events & Galleries", url: createPageUrl("EventsGalleries") },
     { name: "Volunteer", url: createPageUrl("Volunteer") },
@@ -40,7 +45,7 @@ export default function Navbar() {
                 <p className="text-xs sm:text-sm text-gray-600">Indiana</p>
               </div>
             </Link>
-            
+                <p className="text-md sm:text-md text-gray-600 hidden md:block">A "not for profit" tax exempt organization - Tax ID # 39-2431107</p>
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -53,17 +58,43 @@ export default function Navbar() {
       </div>
       
       {/* Desktop Navigation */}
-      <nav className="bg-amber-800 shadow-md hidden md:block">
+      <nav className="bg-[#bb2425] shadow-md hidden md:block">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-center gap-2 py-3 flex-wrap">
             {allNavigation.map((item) => (
-              item.target === "_blank" ? (
+              item.isDropdown ? (
+                <div key={item.name} className="relative">
+                  <button
+                    onClick={() => setIsBookingDropdownOpen(!isBookingDropdownOpen)}
+                    className="flex items-center gap-1 px-3 py-2 text-md font-medium text-white hover:bg-amber-700 rounded-md transition-colors whitespace-nowrap"
+                  >
+                    {item.name}
+                    <ChevronDown size={16} className={`transition-transform ${isBookingDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {isBookingDropdownOpen && (
+                    <div className="absolute top-full left-0 mt-1 bg-white shadow-lg rounded-md py-2 min-w-[150px] z-50">
+                      {item.options.map((option) => (
+                        <Link
+                          key={option.name}
+                          to={option.url}
+                          onClick={() => setIsBookingDropdownOpen(false)}
+                          className={`block px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
+                            isActivePage(option.url) ? "bg-amber-100 text-amber-800" : "text-gray-700"
+                          }`}
+                        >
+                          {option.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : item.target === "_blank" ? (
                 <a
                   key={item.name}
                   href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-2 text-sm font-medium text-white hover:bg-amber-700 rounded-md transition-colors whitespace-nowrap"
+                  className="px-3 py-2 text-md font-medium text-white hover:bg-amber-700 rounded-md transition-colors whitespace-nowrap"
                 >
                   {item.name}
                 </a>
@@ -71,7 +102,7 @@ export default function Navbar() {
                 <Link
                   key={item.name}
                   to={item.url}
-                  className={`px-3 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
+                  className={`px-3 py-2 text-md font-medium rounded-md transition-colors whitespace-nowrap ${
                     isActivePage(item.url)
                       ? "bg-amber-600 text-white"
                       : "text-white hover:bg-amber-700"
@@ -90,7 +121,35 @@ export default function Navbar() {
         <nav className="bg-amber-800 shadow-md md:hidden">
           <div className="flex flex-col px-4 py-4 space-y-2">
             {allNavigation.map((item) => (
-              item.target === "_blank" ? (
+              item.isDropdown ? (
+                <div key={item.name}>
+                  <button
+                    onClick={() => setIsBookingDropdownOpen(!isBookingDropdownOpen)}
+                    className="flex items-center justify-center gap-1 w-full px-4 py-3 text-base rounded-md text-white hover:bg-amber-700 transition-colors"
+                  >
+                    {item.name}
+                    <ChevronDown size={16} className={`transition-transform ${isBookingDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {isBookingDropdownOpen && (
+                    <div className="mt-2 space-y-1">
+                      {item.options.map((option) => (
+                        <Link
+                          key={option.name}
+                          to={option.url}
+                          onClick={closeMenu}
+                          className={`block px-6 py-2 text-sm text-center rounded-md transition-colors ${
+                            isActivePage(option.url)
+                              ? "bg-amber-600 text-white"
+                              : "text-white hover:bg-amber-700"
+                          }`}
+                        >
+                          {option.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : item.target === "_blank" ? (
                 <a
                   key={item.name}
                   href={item.url}

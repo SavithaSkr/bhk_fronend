@@ -123,6 +123,27 @@ export default function EventsGalleriesPage() {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-transparent">
+           <div className="absolute top-[-90px] h-[250px] opacity-[1] left-[0px] z-30">
+        <img
+          src="/assets/flowers.png"
+          alt="flower"
+          className="w-[100%] h-[100%]"
+        />
+      </div>
+      <div className="absolute  top-[-90px] h-[250px] opacity-[1] right-[0px] z-30">
+        <img
+          src="/assets/r-flowers.png"
+          alt="flower"
+          className="w-[100%] h-[100%] "
+        />
+      </div>
+      <div className="absolute w-[600px] h-[600px] bottom-[20%] opacity-[.2] right-[-350px] z-10">
+        <img
+          src="/assets/rotatebg.png"
+          alt=""
+          className="w-[100%] h-[100%] spin-slow"
+        />
+      </div>
       <div className="absolute w-[600px] h-[600px] bottom-[20%] opacity-[.2] right-[-350px] z-10">
         <img
           src="/assets/rotatebg.png"

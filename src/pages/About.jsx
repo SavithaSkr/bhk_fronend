@@ -21,6 +21,29 @@ const CardContent = ({ children, className }) => (
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-transparent overflow-x-hidden relative">
+      {/* ----  */}
+           <div className="absolute top-[-90px] h-[250px] opacity-[1] left-[0px] z-30">
+        <img
+          src="/assets/flowers.png"
+          alt="flower"
+          className="w-[100%] h-[100%]"
+        />
+      </div>
+      <div className="absolute  top-[-90px] h-[250px] opacity-[1] right-[0px] z-30">
+        <img
+          src="/assets/r-flowers.png"
+          alt="flower"
+          className="w-[100%] h-[100%] "
+        />
+      </div>
+      <div className="absolute w-[600px] h-[600px] bottom-[20%] opacity-[.2] right-[-350px] z-10">
+        <img
+          src="/assets/rotatebg.png"
+          alt=""
+          className="w-[100%] h-[100%] spin-slow"
+        />
+      </div>
+      {/* ----  */}
       {/* Header Section */}
       <div className="absolute w-[600px] h-[600px] bottom-[20%] opacity-[.2] right-[-350px] z-10">
         <img
@@ -109,7 +132,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values Section */}
-      <section className="py-16 px-4 bg-white/95 backdrop-blur-sm">
+      <section className="py-16 px-4  relative z-[30]">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

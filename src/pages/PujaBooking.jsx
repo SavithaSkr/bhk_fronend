@@ -4,7 +4,21 @@ import { motion } from "framer-motion";
 export default function PujaBookingPage() {
   return (
     <div className="min-h-screen bg-transparent relative overflow-x-hidden">
-      <div className="absolute w-[600px] h-[600px] bottom-[20%] opacity-[.2] right-[-350px] z-10">
+           <div className="absolute top-[-90px] h-[250px] opacity-[1] left-[0px] z-30">
+        <img
+          src="/assets/flowers.png"
+          alt="flower"
+          className="w-[100%] h-[100%]"
+        />
+      </div>
+      <div className="absolute  top-[-90px] h-[250px] opacity-[1] right-[0px] z-30">
+        <img
+          src="/assets/r-flowers.png"
+          alt="flower"
+          className="w-[100%] h-[100%] "
+        />
+      </div>
+      <div className="absolute w-[600px] h-[600px] bottom-[20%] opacity-[.2] right-[-350px] z-8">
         <img
           src="/assets/rotatebg.png"
           alt=""

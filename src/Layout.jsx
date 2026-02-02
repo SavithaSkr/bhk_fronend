@@ -8,7 +8,7 @@ import CursorImageTrail from "./components/effects/CursorImageTrail.jsx";
 import { set } from "date-fns";
 
 export default function Layout({ children }) {
-  const flowerGifUrl = "/assets/flowers.png"; // Use existing flower image instead of missing GIF
+  // const flowerGifUrl = "/assets/flowers.png"; // Use existing flower image instead of missing GIF
   const [showEntryPopup, setShowEntryPopup] = useState(true);
   const [posterImages, setPosterImages] = useState([]);
 
@@ -96,7 +96,7 @@ export default function Layout({ children }) {
           left: 0,
           width: "100%",
           height: "100%",
-          backgroundImage: `url(${flowerGifUrl})`,
+          // backgroundImage: `url(${flowerGifUrl})`,
           backgroundRepeat: "repeat",
           zIndex: -1,
           pointerEvents: "none",
