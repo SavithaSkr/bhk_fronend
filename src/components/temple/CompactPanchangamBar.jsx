@@ -177,34 +177,40 @@ export default function CompactPanchangamBar() {
                 Upcoming Auspicious Days
               </h3>
               <div className="space-y-2">
-                {auspiciousDays.slice(0, 4).map((day, index) => (
-                  <div
-                    key={index}
-                    className="bg-white/80 p-2 rounded text-sm flex justify-between items-center"
-                  >
-                    <span className="font-medium text-slate-800">
-                      {day.name}
-                    </span>
-                    <div className="text-right">
-                      {day.isToday ? (
-                        <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">
-                          Today!
-                        </span>
-                      ) : (
-                        <div>
-                          <div className="text-orange-600 font-semibold">
-                            {day.daysLeft === 1
-                              ? "Tomorrow"
-                              : `${day.daysLeft} days`}
+                {auspiciousDays && auspiciousDays.length > 0 ? (
+                  auspiciousDays.slice(0, 4).map((day, index) => (
+                    <div
+                      key={index}
+                      className="bg-white/80 p-2 rounded text-sm flex justify-between items-center"
+                    >
+                      <span className="font-medium text-slate-800">
+                        {day.name}
+                      </span>
+                      <div className="text-right">
+                        {day.isToday ? (
+                          <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">
+                            Today!
+                          </span>
+                        ) : (
+                          <div>
+                            <div className="text-orange-600 font-semibold">
+                              {day.daysLeft === 1
+                                ? "Tomorrow"
+                                : `${day.daysLeft} days`}
+                            </div>
+                            <div className="text-xs text-slate-500">
+                              {day.date}
+                            </div>
                           </div>
-                          <div className="text-xs text-slate-500">
-                            {day.date}
-                          </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="bg-white/80 p-3 rounded text-sm text-center text-slate-500">
+                    No upcoming auspicious days available
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </div>

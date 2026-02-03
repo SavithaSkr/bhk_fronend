@@ -106,7 +106,7 @@ export const Panchangam = {
   fetchPanchangamData: async () => {
 
     const today = new Date();
-    today.setHours(6, 0, 0, 0); // Panchangam starts at sunrise
+    today.setHours(6, 0, 0, 0); 
 
     const MS_PER_DAY = 86400000;
     const LUNAR_MONTH = 29.530588;
