@@ -172,7 +172,7 @@ export default function EventsGalleriesPage() {
       <div className="relative z-20 px-4 py-12">
         <div className="mx-auto max-w-7xl">
           {/* Facebook Live Section */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -204,7 +204,7 @@ export default function EventsGalleriesPage() {
                 Replace the above link with your Facebook page URL.
               </p>
             </div>
-          </motion.div>
+          </motion.div> */}
 
           <div className="flex justify-center mb-8 bg-white rounded shadow-md p-1.5">
             <BookingCalendar calendarId={CALENDAR_ID} bookingLink={BOOKING_LINK} eyebrow={'Baktha Hanuman Events'} title={'Booked Events'} subtitle={'Booked Temple Events'}/>

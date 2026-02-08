@@ -11,6 +11,7 @@ export default function Navbar() {
   const bookingOptions = [
     { name: "Puja Booking", url: createPageUrl("PujaBooking") },
     { name: "Priest Booking", url: createPageUrl("PriestBooking") },
+    { name: "Special Pooja Booking", url: createPageUrl("SpecialPoojaBooking") },
   ];
 
   const allNavigation = [
@@ -19,6 +20,7 @@ export default function Navbar() {
     { name: "Booking", isDropdown: true, options: bookingOptions },
     { name: "Donations", target: "_blank", url: "https://hanumantempleindiana.square.site/" },
     { name: "Events & Galleries", url: createPageUrl("EventsGalleries") },
+    { name: "Fresh Garland Order", url: createPageUrl("Garland") },
     { name: "Volunteer", url: createPageUrl("Volunteer") },
     { name: "Contact Us", url: createPageUrl("Contact") },
   ];
@@ -35,7 +37,7 @@ export default function Navbar() {
             {/* Logo */}
             <Link
               to={createPageUrl("Home")}
-              className="flex items-center gap-3 my-4 sm:my-0"
+              className="flex items-center gap-3 my-4 sm:my-0 py-3"
             >
               <img src="/assets/Logo.png" alt="Logo" className="w-16 h-16 sm:w-20 sm:h-20" />
               <div>

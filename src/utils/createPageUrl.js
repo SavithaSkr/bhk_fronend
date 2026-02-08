@@ -9,6 +9,10 @@ export const createPageUrl = (pageName) => {
       return "/pujabooking";
     case "PriestBooking":
       return "/priestbooking";
+    case "SpecialPoojaBooking":
+      return "/specialpoojabooking";
+    case "Garland":
+      return "/garland";
     case "Donations":
       return "/donations";
     case "EventsGalleries":

@@ -9,7 +9,7 @@ import { set } from "date-fns";
 
 export default function Layout({ children }) {
   // const flowerGifUrl = "/assets/flowers.png"; // Use existing flower image instead of missing GIF
-  const [showEntryPopup, setShowEntryPopup] = useState(true);
+  const [showEntryPopup, setShowEntryPopup] = useState(false);
   const [posterImages, setPosterImages] = useState([]);
 
   const POSTER_FOLDER_ID = import.meta.env.VITE_GDRIVE_FOLDER_ID_POSTERS;

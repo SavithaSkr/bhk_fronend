@@ -392,7 +392,7 @@ export default function HomePage() {
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 gap-8">
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -490,6 +490,38 @@ export default function HomePage() {
                     <Link to={createPageUrl("Volunteer")}>
                       <Button className="border-2 border-orange-500 text-[#ea580c] hover:bg-orange-500 hover:text-orange-500 hover:bg-transparent bg-orange-500 w-full transition-colors">
                         Join Us
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                viewport={{ once: true }}
+              >
+                <Card className="h-full shadow-lg hover:shadow-xl transition-all duration-300 border-0 bg-white rounded-lg overflow-hidden group">
+                  <div className="h-40 overflow-hidden">
+                    <img
+                      src="/assets/volunteer.jpg" // Local image path
+                      alt="Volunteer hands"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <CardHeader className="text-center">
+                    <CardTitle className="text-xl text-gray-800">
+                      Fresh Garland Order
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <p className="text-gray-600 mb-6">
+                      Join our community in serving through various temple
+                      activities and events
+                    </p>
+                    <Link to={createPageUrl("Garland")}>
+                      <Button className="border-2 border-orange-500 text-[#ea580c] hover:bg-orange-500 hover:text-orange-500 hover:bg-transparent bg-orange-500 w-full transition-colors">
+                        Order Now
                       </Button>
                     </Link>
                   </CardContent>
@@ -633,8 +665,8 @@ export default function HomePage() {
               {/* LEFT SIDE – CALENDAR */}
               <div className="w-full lg:w-1/3">
                 <div className="p-4 rounded-xl shadow-lg border bg-white relative overflow-hidden">
-                  <a class="oWHwWc" target="_blank" title="Open Calendar, Temple Events in new window" aria-label="Open Calendar, Temple Events in new window" href="https://www.google.com/calendar/embed?color=%23ff7537&amp;src=htci.org_98m1srpu6julj5fe4pufoh233c@group.calendar.google.com"><svg class="hmuWb" viewBox="0 0 24 24" focusable="false" style={{width:"50px",height:"50px",display:"flex",alignItems:"center",justifyContent:"center",position:"absolute",right:"10px",top:"10px",background:"#0000002d",padding:"10px",color:"white"}}><path d="M0 0h24v24H0z" fill="none"></path><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path></svg></a>
-                  <iframe src="https://www.google.com/calendar/embed?color=%23ff7537&embed_style=WyJhdDplbWI6c3QiLCIjZTBlMGUwIiwiI2VkZWRlZCIsIiM0MTg0ZjMiLCJyb2JvdG8iLCIjNjM2MzYzIiw1MDAsIiNmZmYiXQo&eopt=0&mode=agenda&showCalendars=1&showPrint=0&showTz=1&src=htci.org_98m1srpu6julj5fe4pufoh233c@group.calendar.google.com" frameborder="0" height={500} width="100%" allowfullscreen></iframe>
+                  <a class="oWHwWc" target="_blank" title="Open Calendar, Temple Events in new window" aria-label="Open Calendar, Temple Events in new window" href="https://calendar.google.com/calendar/u/0/embed?src=hanumantempleindiana@gmail.com&ctz=America/Indiana/Indianapolis"><svg class="hmuWb" viewBox="0 0 24 24" focusable="false" style={{width:"50px",height:"50px",display:"flex",alignItems:"center",justifyContent:"center",position:"absolute",right:"10px",top:"10px",background:"#0000002d",padding:"10px",color:"white"}}><path d="M0 0h24v24H0z" fill="none"></path><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path></svg></a>
+                  <iframe src="https://calendar.google.com/calendar/u/0/embed?src=hanumantempleindiana@gmail.com&ctz=America/Indiana/Indianapolis" frameborder="0" height={500} width="100%" allowfullscreen></iframe>
                   {/* <CalendarMini calendarId={calendarId} height={500} /> */}
                 </div>
               </div>
@@ -763,7 +795,8 @@ export default function HomePage() {
                 image_url: url,
                 google_drive_link: url,
                 category: 'Gallery'
-              }))).map((image, index) => (
+              }))).slice(0, 6).map((image, index) => (
+                <Link to={createPageUrl("EventsGalleries")}>
                 <motion.div
                   key={image.id}
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -777,15 +810,16 @@ export default function HomePage() {
                     alt={image.title}
                     className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
                   />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                  {/* <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
                     <div className="p-4 text-white">
                       <h4 className="font-semibold">{image.title}</h4>
                       <p className="text-sm text-gray-200">
                         {image.category}
                       </p>
                     </div>
-                  </div>
+                  </div> */}
                 </motion.div>
+                </Link>
               ))}
             </div>
 

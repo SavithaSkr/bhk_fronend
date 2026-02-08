@@ -32,13 +32,13 @@ export default function Footer() {
                 className="w-12 h-12"
               />
               <div>
-                <h3 className="font-bold text-xl text-white">
+                <h3 className="font-bold text-lg text-white">
                   Sri Bhaktha Hanuman Temple
                 </h3>
                 <p className="text-md text-gray-200">Indiana</p>
               </div>
             </div>
-            <p className="text-gray text-lg leading-relaxed">
+            <p className="text-gray text-md leading-relaxed">
               A sacred place of worship dedicated to Lord Hanuman, serving the
               Hindu community with devotion and spiritual guidance.
             </p>
@@ -46,13 +46,13 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-semibold mb-4 text-white text-xl">Quick Links</h4>
+            <h4 className="font-semibold mb-4 text-white text-lg">Quick Links</h4>
             <div className="space-y-2">
               {navigationItems.map((item) => (
                 <Link
                   key={item.name}
                   to={item.url}
-                  className="block text-gray hover:text-orange-200 text-lg transition-colors"
+                  className="block text-gray hover:text-orange-200 text-md transition-colors"
                 >
                   {item.name}
                 </Link>
@@ -62,34 +62,34 @@ export default function Footer() {
 
           {/* Temple Hours */}
           <div>
-            <h4 className="font-semibold mb-4 text-white text-xl">Temple Hours</h4>
+            <h4 className="font-semibold mb-4 text-white text-lg">Temple Hours</h4>
             <div className="space-y-2 text-md text-gray">
               <div>
                 <p className="font-medium">Weekdays</p>
-                <p className="text-lg">09:00 AM - 11:30 AM & 06:00 PM - 08:30 PM</p>
+                <p className="text-md">09:00 AM - 11:30 AM & 06:00 PM - 08:30 PM</p>
               </div>
               <div className="mt-3">
                 <p className="font-medium">Weekends</p>
-                <p className="text-lg">08:30 AM - 02:30 PM & 05:30 PM - 08:30 PM</p>
+                <p className="text-md">08:30 AM - 02:30 PM & 05:30 PM - 08:30 PM</p>
               </div>
             </div>
           </div>
 
           {/* Contact & Social */}
           <div>
-            <h4 className="font-semibold mb-4 text-white text-xl">Contact Us</h4>
+            <h4 className="font-semibold mb-4 text-white text-lg">Contact Us</h4>
             <div className="space-y-3 text-md text-gray">
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-grey-200" />
-                <span className="text-lg">248-525-8917</span>
+                <span className="text-md">248-525-8917</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-grey-200" />
-                <span className="text-lg">info@hanumantemple.org</span>
+                <span className="text-md">info@hanumantemple.org</span>
               </div>
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-grey-200 mt-1" />
-                <span className="text-lg">
+                <span className="text-md">
                   10080 E 121st Street, Suite 130A
                   <br />
                   Fishers, IN 46037
@@ -121,18 +121,18 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4 mt-12 border-gray-700 border-t">
-          <div className=" mt-3 pt-6 text-start text-lg text-gray-200">
+          <div className=" mt-3 pt-6 text-start text-md text-gray-200">
             <p>
               &copy; {new Date().getFullYear()} Sri Bhaktha Hanuman Temple -
               Indiana. All rights reserved.
             </p>
             <p className="mt-1">Built with devotion for the community</p>
           </div>
-          <div className="mt-3 pt-6 text-start text-lg text-gray-200">
+          <div className="mt-3 pt-6 text-start text-md text-gray-200">
             <p>
               &copy; {new Date().getFullYear()} Design and Developed by{" "}
               <a
-                href="https://www.thedesigndynasty.com/"
+                href="https://thedesigndynasty.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-orange-200 transition-colors"

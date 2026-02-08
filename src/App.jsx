@@ -4,12 +4,14 @@ import Layout from "./Layout.jsx";
 import HomePage from "./pages/Home.jsx";
 import AboutPage from "./pages/About.jsx";
 import PujaBookingPage from "./pages/PujaBooking.jsx";
+import SpecialPoojaBookingPage from "./pages/SpecialPoojaBooking.jsx";
 import PriestBookingPage from "./pages/PriestBooking.jsx";
 import DonationsPage from "./pages/Donations.jsx";
 import EventsGalleriesPage from "./pages/EventsGalleries.jsx";
-import VolunteerPage from "./pages/Volunteer.jsx";
+import VolunteerPage from "./pages/Volunteer.jsx";``
 import ContactPage from "./pages/Contact.jsx";
 import HeroImageManagement from "./pages/HeroImageManagement.jsx"; // Admin page
+import GarlandPage from "./pages/Garland.jsx";
 
 function App() {
   return (
@@ -36,6 +38,14 @@ function App() {
           element={
             <Layout currentPageName="PujaBooking">
               <PujaBookingPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/specialpoojabooking"
+          element={
+            <Layout currentPageName="SpecialPoojaBooking">
+              <SpecialPoojaBookingPage />
             </Layout>
           }
         />
@@ -68,6 +78,14 @@ function App() {
           element={
             <Layout currentPageName="Volunteer">
               <VolunteerPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/garland"
+          element={
+            <Layout currentPageName="Garland">
+              <GarlandPage />
             </Layout>
           }
         />
