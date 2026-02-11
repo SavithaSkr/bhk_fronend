@@ -238,9 +238,9 @@ export default function AboutPage() {
       </section>
 
       {/* Experience the Divine Section */}
-      <section className="py-16 px-4 bg-yellow-50/90 backdrop-blur-sm">
+      <section className="py-16 px-4 bg-yellow-50/90 backdrop-blur-sm z-[30] relative">
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 items-center ">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -265,38 +265,38 @@ export default function AboutPage() {
 
             <motion.div
               initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <div className="flex items-center gap-3 mb-6">
-                <Sparkles className="w-8 h-8 text-yellow-500" />
-                <h2 className="text-3xl font-bold text-gray-900">
+              <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
                   Experience the Divine!
                 </h2>
               </div>
 
-              <p className="text-lg text-gray-700 leading-relaxed mb-8">
+              <p className="text-base sm:text-lg text-gray-700 leading-relaxed mb-6 sm:mb-8">
                 Immerse yourself in the divine energy and find inner peace at
                 Sri Bhaktha Hanuman Temple. Join us for our special events and
                 ceremonies to experience the spiritual essence of our sacred
                 space.
               </p>
 
-              <div className="bg-white p-6 rounded-xl shadow-lg">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-red-500" />
                   Visit Us
                 </h3>
-                <div className="space-y-2 text-gray-600">
-                  <p>
+                <div className="space-y-2 text-sm sm:text-base text-gray-600">
+                  <p className="break-words">
                     <strong>Address:</strong> 10080 E 121st Street, Suite 130A,
                     Fishers IN 46037
                   </p>
                   <p>
                     <strong>Phone:</strong> 248-525-8917
                   </p>
-                  <div className="mt-4">
+                  <div className="mt-3 sm:mt-4">
                     <p>
                       <strong>Temple Hours:</strong>
                     </p>
