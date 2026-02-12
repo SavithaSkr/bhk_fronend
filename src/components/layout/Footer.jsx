@@ -85,7 +85,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-grey-200" />
-                <span className="text-md">info@hanumantemple.org</span>
+                <span className="text-md">sbht.indiana@gmail.com</span>
               </div>
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-grey-200 mt-1" />
