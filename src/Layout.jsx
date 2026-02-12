@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "./components/layout/Navbar.jsx";
 import Footer from "./components/layout/Footer.jsx";
-import CompactPanchangamBar from "./components/temple/CompactPanchangamBar.jsx";
+//import CompactPanchangamBar from "./components/temple/CompactPanchangamBar.jsx";
+import MyPanchangamBar from "./components/temple/MyPanchangamBar.jsx";
 import ScrollToTopButton from "./components/ui/ScrollToTopButton.jsx";
 import EntryPopupModal from "./components/ui/EntryPopupModal.jsx";
 import CursorImageTrail from "./components/effects/CursorImageTrail.jsx";
@@ -116,7 +117,8 @@ export default function Layout({ children }) {
       {!showEntryPopup && (
         <>
           {/* Compact Panchangam Bar */}
-          <CompactPanchangamBar />
+          {/*<CompactPanchangamBar />*/}
+          <MyPanchangamBar />
 
           {/* Navbar */}
           <Navbar />
