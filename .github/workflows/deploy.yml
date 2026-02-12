@@ -2,7 +2,7 @@ name: Deploy Vite to VPS
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -22,9 +22,24 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      # ✅ IMPORTANT: Vite reads env at BUILD time. Make sure these match your code: import.meta.env.VITE_*
       - name: Build
         env:
-          VITE_CALENDAR_ID: ${{ vars.VITE_CALENDAR_ID }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_MAIL_API_URL: ${{ secrets.VITE_MAIL_API_URL }}
+          VITE_MAIL_FROM: ${{ secrets.VITE_MAIL_FROM }}
+
+          VITE_GDRIVE_KEY: ${{ secrets.VITE_GDRIVE_KEY }}
+          VITE_GDRIVE_FOLDER_ID: ${{ secrets.VITE_GDRIVE_FOLDER_ID }}
+          VITE_GDRIVE_FOLDER_ID_HERO: ${{ secrets.VITE_GDRIVE_FOLDER_ID_HERO }}
+          VITE_GDRIVE_FOLDER_ID_EVENTS: ${{ secrets.VITE_GDRIVE_FOLDER_ID_EVENTS }}
+          VITE_GDRIVE_FOLDER_ID_POSTERS: ${{ secrets.VITE_GDRIVE_FOLDER_ID_POSTERS }}
+
+          # ✅ FIX: your code uses VITE_GOOGLE_CALENDAR_ID (not VITE_CALENDAR_ID)
+          VITE_GOOGLE_CALENDAR_ID: ${{ secrets.VITE_GOOGLE_CALENDAR_ID }}
+
+          VITE_JOT_FORM_ID: ${{ secrets.VITE_JOT_FORM_ID }}
+          VITE_BOOKING_LINK: ${{ secrets.VITE_BOOKING_LINK }}
         run: npm run build
 
       - name: Setup SSH
@@ -34,5 +49,7 @@ jobs:
 
       - name: Deploy to VPS
         run: |
-          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" \
-          dist/ ${{ secrets.SBHT_USER }}@${{ secrets.SBHT_HOST }}:/home/sbht/htdocs/sbht.thedesigndynasty.com/
+          rsync -avz --delete \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            dist/ \
+            ${{ secrets.SBHT_USER }}@${{ secrets.SBHT_HOST }}:/home/sbht/htdocs/sbht.thedesigndynasty.com/
