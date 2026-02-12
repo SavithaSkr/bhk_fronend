@@ -66,7 +66,7 @@ export default function PriestBookingPage() {
           >
             <div className="bg-white/90 backdrop-blur-sm shadow-xl rounded-lg p-1 md:p-2">
               <iframe
-                src="https://form.jotform.com/252574598483069"
+                src="https://form.jotform.com/252005824691152"
                 width="100%"
                 height="1500"
                 frameBorder="0"
