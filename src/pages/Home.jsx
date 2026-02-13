@@ -504,7 +504,7 @@ export default function HomePage() {
                 <Card className="h-full shadow-lg hover:shadow-xl transition-all duration-300 border-0 bg-white rounded-lg overflow-hidden group">
                   <div className="h-40 overflow-hidden">
                     <img
-                      src="/assets/volunteer.jpg" // Local image path
+                      src="/assets/garland.jpg" // Local image path
                       alt="Volunteer hands"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
