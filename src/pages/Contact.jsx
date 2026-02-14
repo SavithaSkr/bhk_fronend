@@ -247,7 +247,7 @@ export default function ContactPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <Mail className="w-5 h-5 text-orange-500" />
-                    <span>info@hanumantemple.org</span>
+                    <span>sbht.indiana@gmail.com</span>
                   </div>
                 </div>
               </div>

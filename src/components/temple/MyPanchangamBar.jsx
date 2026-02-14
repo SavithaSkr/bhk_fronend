@@ -67,26 +67,35 @@ export default function MyPanchangamBar() {
     document.body.appendChild(s);
 
     // Observe changes in widget output to extract summary
-    const observer = new MutationObserver(() => {
-      const txt = el.innerText || "";
+const observer = new MutationObserver(() => {
+  const basic = el.querySelector("#basicdata");
+  const rkym = el.querySelector("#rkym");
+  const other = el.querySelector("#otherdetails");
+  const vratams = el.querySelector("#vratams");
 
-      const tithiMatch = txt.match(/Tithi\s*[:\-]?\s*([A-Za-z]+)/i);
-      const nakMatch = txt.match(/Nakshatra\s*[:\-]?\s*([A-Za-z]+)/i);
+  if (basic) {
+    // Build clean HTML manually
+    const cleanedHTML = `
+      <div>
+        ${basic?.innerHTML || ""}
+        ${rkym?.innerHTML || ""}
+        ${other?.innerHTML || ""}
+        ${vratams?.innerHTML || ""}
+      </div>
+    `;
 
-      const firstLine =
-        txt
-          .split("\n")
-          .map((l) => l.trim())
-          .filter(Boolean)[0] || "";
+    // Replace FULL widget with only required content
+    el.innerHTML = cleanedHTML;
 
-      setSummary({
-        dateText: firstLine,
-        tithi: tithiMatch?.[1] || "",
-        nakshatra: nakMatch?.[1] || "",
-      });
-    });
+    // Stop observing after cleaning
+    observer.disconnect();
+    setLoading(false);
+  }
+});
 
-    observer.observe(el, { childList: true, subtree: true });
+
+
+observer.observe(el, { childList: true, subtree: true });
 
     return () => {
       observer.disconnect();
@@ -96,31 +105,30 @@ export default function MyPanchangamBar() {
       if (injected) injected.remove();
     };
   }, [LOC_ID, scriptSrc]);
+const today = new Date();
 
+const formattedDate = today.toLocaleDateString(undefined, {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
   return (
     <div className="bg-orange-500 text-slate-700 shadow-sm relative z-40 border-b border-slate-200 navbar-header">
       {/* Top compact bar */}
-      <div className="max-w-7xl mx-auto px-4 py-2">
+      {/* <div className="max-w-7xl mx-auto px-4 py-2">
         <div className="flex items-center justify-end gap-6">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-white" />
-              <span className="font-semibold text-sm text-white">
-                {loading
-                  ? "Loading Panchangam..."
-                  : summary.dateText || "Panchangam"}
-              </span>
+              <span className="text-white mt-1">{formattedDate}</span>
+
             </div>
 
             <div className="hidden md:flex items-center gap-4 text-sm text-white">
               <div className="flex items-center gap-1">
-                <Star className="w-3 h-3 text-white" />
-                <span>Tithi: {loading ? "..." : summary.tithi || "—"}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Moon className="w-3 h-3 text-white" />
                 <span>
-                  Nakshatra: {loading ? "..." : summary.nakshatra || "—"}
+                  Today Panchangam
                 </span>
               </div>
             </div>
@@ -140,27 +148,35 @@ export default function MyPanchangamBar() {
             />
           </button>
         </div>
-      </div>
+      </div> */}
 
       {/* ✅ IMPORTANT: container always exists. We only hide/show it. */}
-      <div
+      {/* <div
         className={`bg-orange-100/50 backdrop-blur-sm border-t border-slate-200 ${
           isExpanded ? "block" : "hidden"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div
-            ref={containerRef}
-            id={TARGET_ID}
-            className="bg-white/80 rounded-lg p-3 overflow-x-auto min-h-[90px]"
-          />
+  ref={containerRef}
+  id={TARGET_ID}
+  className="bg-white rounded-lg p-4 shadow-sm"
+  style={{
+    minHeight: "120px"
+  }}
+/>
           {loading && (
             <div className="text-xs text-slate-500 mt-2">
               Loading widget from mypanchang.com...
             </div>
           )}
+          {error && (
+            <div className="text-xs text-red-600 mt-2 p-2 bg-red-50 rounded">
+              {error}
+            </div>
+          )}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

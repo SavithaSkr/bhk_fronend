@@ -20,7 +20,7 @@
   --color-border: #e5e7eb; /* e.g., gray-200 */
 
   /* Fonts */
-  --font-family-heading: "Roboto Slab", serif;
+  --font-family-heading: "Roboto Slab", serif !important;
   /* --font-family-body: "Inter", sans-serif; */
 
   /* UI Elements */
@@ -31,7 +31,7 @@
 
 /* Minimal body styling for default fonts and text color */
 body {
-  font-family: var(--font-family-body);
+  font-family: var(--font-family-body) !important;
   color: var(--color-text-medium);
   background-color: var(--color-background-light);
   overflow: hidden;

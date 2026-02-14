@@ -207,7 +207,7 @@ export default function EventsGalleriesPage() {
           </motion.div> */}
 
           <div className="flex justify-center mb-8 bg-white rounded shadow-md p-1.5">
-            <BookingCalendar calendarId={CALENDAR_ID} bookingLink={BOOKING_LINK} eyebrow={'Baktha Hanuman Events'} title={'Booked Events'} subtitle={'Booked Temple Events'}/>
+            <BookingCalendar calendarId={CALENDAR_ID} bookingLink={BOOKING_LINK} eyebrow={'Baktha Hanuman Events'} title={'Monthly Schedule'} subtitle={'Booked Temple Events'}/>
           </div>
 
           {/* Tabs */}

@@ -40,26 +40,26 @@ export default function BookingCalendar({
       height: "720",
     });
     console.log(params, 'tfugyhji');
-    return `https://calendar.google.com/calendar/embed?${params.toString()}`;
+    return `https://calendar.google.com/calendar/u/0/embed?src=hanumantempleindiana@gmail.com&ctz=America/Indiana/Indianapolis&mode=MONTH`;
   }, [calendarId, timezone, view]);
 
-  if (!calendarId) {
-    return (
-      <section className="calendar-page">
-        <div className="calendar-card">
-          <header className="calendar-header">
-            <div>
-              <p className="eyebrow">Google Calendar</p>
-              <h1>Calendar unavailable</h1>
-              <p className="subtext">
-                Provide a valid VITE_CALENDAR_ID value in your environment file to load events.
-              </p>
-            </div>
-          </header>
-        </div>
-      </section>
-    );
-  }
+  // if (!calendarId) {
+  //   return (
+  //     <section className="calendar-page">
+  //       <div className="calendar-card">
+  //         <header className="calendar-header">
+  //           <div>
+  //             <p className="eyebrow">Google Calendar</p>
+  //             <h1>Calendar unavailable</h1>
+  //             <p className="subtext">
+  //               Provide a valid VITE_CALENDAR_ID value in your environment file to load events.
+  //             </p>
+  //           </div>
+  //         </header>
+  //       </div>
+  //     </section>
+  //   );
+  // }
 
   return (
     <section className="calendar-page w-full">
@@ -72,7 +72,7 @@ export default function BookingCalendar({
           </div>
 
           <div className="calendar-actions">
-            <select
+            {/* <select
               aria-label="Calendar view"
               className="view-select"
               value={view}
@@ -83,9 +83,9 @@ export default function BookingCalendar({
                   {option.label}
                 </option>
               ))}
-            </select>
+            </select> */}
 
-            {bookingLink && (
+            {/* {bookingLink && (
               <a
                 className="primary-btn"
                 href={bookingLink}
@@ -94,22 +94,16 @@ export default function BookingCalendar({
               >
                 Book slot
               </a>
-            )}
+            )} */}
           </div>
         </header>
 
         <div className="iframe-shell">
-          {iframeSrc ? (
-            <iframe
-              title="Google Calendar"
-              src={iframeSrc}
-              className="calendar-iframe"
-              loading="lazy"
-              allowFullScreen
-            />
-          ) : (
+          {/* {iframeSrc ? ( */}
+            <iframe src="https://calendar.google.com/calendar/u/0/embed?src=hanumantempleindiana@gmail.com&ctz=America/Indiana/Indianapolis&mode=MONTH" frameborder="0" height={500} width="100%" allowfullscreen></iframe>
+          {/* ) : (
             <p className="calendar-helper">Unable to render Google Calendar embed.</p>
-          )}
+          )} */}
         </div>
       </div>
     </section>

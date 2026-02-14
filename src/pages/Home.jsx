@@ -666,7 +666,7 @@ export default function HomePage() {
               <div className="w-full lg:w-1/3">
                 <div className="p-4 rounded-xl shadow-lg border bg-white relative overflow-hidden">
                   <a class="oWHwWc" target="_blank" title="Open Calendar, Temple Events in new window" aria-label="Open Calendar, Temple Events in new window" href="https://calendar.google.com/calendar/u/0/embed?src=hanumantempleindiana@gmail.com&ctz=America/Indiana/Indianapolis"><svg class="hmuWb" viewBox="0 0 24 24" focusable="false" style={{width:"50px",height:"50px",display:"flex",alignItems:"center",justifyContent:"center",position:"absolute",right:"10px",top:"10px",background:"#0000002d",padding:"10px",color:"white"}}><path d="M0 0h24v24H0z" fill="none"></path><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path></svg></a>
-                  <iframe src="https://calendar.google.com/calendar/u/0/embed?src=hanumantempleindiana@gmail.com&ctz=America/Indiana/Indianapolis&mode=WEEK" frameborder="0" height={500} width="100%" allowfullscreen></iframe>
+                  <iframe src="https://calendar.google.com/calendar/u/0/embed?src=hanumantempleindiana@gmail.com&ctz=America/Indiana/Indianapolis&mode=AGENDA" frameborder="0" height={500} width="100%" allowfullscreen></iframe>
                   {/* <CalendarMini calendarId={calendarId} height={500} /> */}
                 </div>
               </div>
