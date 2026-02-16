@@ -126,6 +126,9 @@ export default function Footer() {
               &copy; {new Date().getFullYear()} Sri Bhaktha Hanuman Temple -
               Indiana. All rights reserved.
             </p>
+             <p>
+              A "not for profit" tax exempt organization - Tax ID # 39-2431107
+            </p>
             <p className="mt-1">Built with devotion for the community</p>
           </div>
           <div className="mt-3 pt-6 text-start text-md text-gray-200">

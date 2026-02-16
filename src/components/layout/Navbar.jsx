@@ -59,7 +59,7 @@ export default function Navbar() {
                 <p className="text-xs sm:text-sm text-gray-600">Indiana</p>
               </div>
             </Link>
-                <p className="text-md sm:text-md text-gray-600 hidden md:block">A "not for profit" tax exempt organization - Tax ID # 39-2431107</p>
+                {/* <p className="text-md sm:text-md text-gray-600 hidden md:block">A "not for profit" tax exempt organization - Tax ID # 39-2431107</p> */}
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
