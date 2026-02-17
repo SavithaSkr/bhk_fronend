@@ -1,111 +1,77 @@
-import { useMemo, useState } from "react";
-
-const views = [
-  { label: "Month", value: "MONTH" },
-  { label: "Week", value: "WEEK" },
-  { label: "Schedule", value: "AGENDA" },
-];
-
-const resolveTimeZone = () => {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone;
-  } catch {
-    return "UTC";
-  }
-};
+import React, { useMemo } from "react";
 
 export default function BookingCalendar({
   calendarId,
   bookingLink,
-  eyebrow,
-  title,
-  subtitle,
+  eyebrow = "Events",
+  title = "Monthly Schedule",
+  subtitle = "Booked Temple Events",
+  timezone = "America/Indianapolis",
 }) {
-  const [view, setView] = useState("MONTH");
-  const timezone = useMemo(() => resolveTimeZone(), []);
-
-  const iframeSrc = useMemo(() => {
+  const src = useMemo(() => {
     if (!calendarId) return "";
+    const base = "https://calendar.google.com/calendar/embed";
     const params = new URLSearchParams({
-      src: calendarId,
+      src: calendarId,               // will be encoded by URLSearchParams
       ctz: timezone,
-      mode: view,
+      mode: "MONTH",
       showTitle: "0",
+      showNav: "1",
+      showDate: "1",
+      showPrint: "0",
       showTabs: "0",
       showCalendars: "0",
-      showPrint: "0",
-      showDate: "1",
-      wkst: "1",
-      bgColor: "#ffffff",
-      height: "720",
+      showTz: "0",
     });
-    console.log(params, 'tfugyhji');
-    return `https://calendar.google.com/calendar/u/0/embed?src=hanumantempleindiana@gmail.com&ctz=America/Indiana/Indianapolis&mode=MONTH`;
-  }, [calendarId, timezone, view]);
-
-  // if (!calendarId) {
-  //   return (
-  //     <section className="calendar-page">
-  //       <div className="calendar-card">
-  //         <header className="calendar-header">
-  //           <div>
-  //             <p className="eyebrow">Google Calendar</p>
-  //             <h1>Calendar unavailable</h1>
-  //             <p className="subtext">
-  //               Provide a valid VITE_CALENDAR_ID value in your environment file to load events.
-  //             </p>
-  //           </div>
-  //         </header>
-  //       </div>
-  //     </section>
-  //   );
-  // }
+    return `${base}?${params.toString()}`;
+  }, [calendarId, timezone]);
 
   return (
-    <section className="calendar-page w-full">
-      <div className="calendar-card">
-        <header className="calendar-header">
-          <div>
-            <p className="eyebrow">{eyebrow}</p>
-            <h1>{title}</h1>
-            <p className="subtext">{subtitle}</p>
+    <div className="w-full bg-white/90 rounded-2xl shadow-lg p-6">
+      <div className="mb-4">
+        <div className="text-xs tracking-widest text-orange-600 font-semibold uppercase">
+          {eyebrow}
+        </div>
+        <div className="text-3xl font-bold text-gray-900">{title}</div>
+        <div className="text-sm text-gray-600 mt-1">{subtitle}</div>
+      </div>
+
+      {!calendarId ? (
+        <div className="p-4 rounded-lg bg-yellow-50 text-yellow-900 border border-yellow-200">
+          Calendar ID missing. Set <b>VITE_GOOGLE_CALENDAR_ID</b> in your environment.
+        </div>
+      ) : (
+        <>
+          <div className="rounded-2xl overflow-hidden border">
+            <iframe
+              key={src} // forces refresh when src changes
+              title="Temple Calendar"
+              src={src}
+              className="w-full h-[650px]"
+              style={{ border: 0 }}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
           </div>
 
-          <div className="calendar-actions">
-            {/* <select
-              aria-label="Calendar view"
-              className="view-select"
-              value={view}
-              onChange={(event) => setView(event.target.value)}
-            >
-              {views.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select> */}
-
-            {/* {bookingLink && (
+          {bookingLink ? (
+            <div className="mt-4">
               <a
-                className="primary-btn"
                 href={bookingLink}
                 target="_blank"
                 rel="noreferrer"
+                className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-orange-600 text-white font-semibold hover:bg-orange-700"
               >
-                Book slot
+                Book a Priest / Event
               </a>
-            )} */}
-          </div>
-        </header>
+            </div>
+          ) : null}
 
-        <div className="iframe-shell">
-          {/* {iframeSrc ? ( */}
-            <iframe src="https://calendar.google.com/calendar/u/0/embed?src=hanumantempleindiana@gmail.com&ctz=America/Indiana/Indianapolis&mode=MONTH" frameborder="0" height={500} width="100%" allowfullscreen></iframe>
-          {/* ) : (
-            <p className="calendar-helper">Unable to render Google Calendar embed.</p>
-          )} */}
-        </div>
-      </div>
-    </section>
+          <div className="mt-3 text-xs text-gray-500">
+            Debug: Calendar ID = <span className="font-mono">{calendarId}</span>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
