@@ -5,20 +5,11 @@ const useMailAPI = () => {
   const [error, setError] = useState(null);
 
   /**
-   * Sends a "contact" message to the server.
-   * Backend forces delivery to MAIL_TO (admin inbox) to prevent open relay.
-   *
-   * Expected by backend:
-   * - headers: Content-Type: application/json, X-API-KEY
-   * - body: { action, subject, message, reply_to, reply_to_name }
+   * mail-api.php expects:
+   * headers: Content-Type: application/json, X-API-Key
+   * body: { name, email, subject, message, captchaToken }
    */
-  const sendEmail = async ({
-    from, // (kept for backward compatibility; used as reply_to)
-    subject,
-    message,
-    name, // sender name (optional)
-    // to, attachments ignored intentionally (backend disables these)
-  }) => {
+  const sendEmail = async ({ name, email, subject, message, captchaToken }) => {
     setLoading(true);
     setError(null);
 
@@ -26,52 +17,48 @@ const useMailAPI = () => {
     const apiKey = import.meta.env.VITE_MAIL_API_KEY;
 
     try {
-      if (!apiUrl) {
-        throw new Error("Mail API URL is missing (VITE_MAIL_API_URL).");
-      }
-      if (!apiKey) {
-        throw new Error("Mail API key is missing (VITE_MAIL_API_KEY).");
-      }
+      if (!apiUrl) throw new Error("Mail API URL is missing (VITE_MAIL_API_URL).");
+      if (!apiKey) throw new Error("Mail API key is missing (VITE_MAIL_API_KEY).");
+      if (!captchaToken) throw new Error("Captcha token missing. Please verify captcha.");
 
-      // Build payload exactly as mail-api.php expects
       const payload = {
-        action: "contact",
+        name: name ?? "",
+        email: email ?? "",
         subject: subject ?? "",
         message: message ?? "",
-        reply_to: from ?? "", // use 'from' as reply_to (user email)
-        reply_to_name: name ?? "",
+        captchaToken,
       };
 
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-API-KEY": apiKey,
+          "X-API-Key": apiKey, // ✅ matches PHP: HTTP_X_API_KEY
         },
         body: JSON.stringify(payload),
       });
 
-      // Read text first to avoid JSON parse crashes on HTML/empty responses
       const text = await response.text();
-      let result;
+      let result = null;
+
       try {
         result = text ? JSON.parse(text) : null;
       } catch {
-        result = { status: "error", message: text || `HTTP ${response.status}` };
+        result = { error: text || `HTTP ${response.status}` };
       }
 
       if (!response.ok) {
-        throw new Error(result?.message || `HTTP ${response.status}`);
+        throw new Error(result?.error || result?.message || `HTTP ${response.status}`);
       }
 
-      if (!result || result.status !== "success") {
-        throw new Error(result?.message || "Failed to send email.");
+      // ✅ new backend returns { ok: true, message: "..." }
+      if (!result || result.ok !== true) {
+        throw new Error(result?.error || result?.message || "Failed to send email.");
       }
 
       return result;
     } catch (err) {
-      const msg =
-        err?.message || "Something went wrong while sending the message.";
+      const msg = err?.message || "Something went wrong while sending the message.";
       setError(msg);
       throw new Error(msg);
     } finally {

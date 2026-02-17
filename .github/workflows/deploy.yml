@@ -25,6 +25,7 @@ jobs:
       # ✅ IMPORTANT: Vite reads env at BUILD time (import.meta.env.VITE_*)
       - name: Build
         env:
+          VITE_RECAPTCHA_SITE_KEY: ${{ secrets.VITE_RECAPTCHA_SITE_KEY }}
           VITE_MAIL_API_KEY: ${{ secrets.VITE_MAIL_API_KEY }}
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_MAIL_API_URL: ${{ secrets.VITE_MAIL_API_URL }}
