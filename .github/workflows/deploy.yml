@@ -22,7 +22,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      # ✅ IMPORTANT: Vite reads env at BUILD time. Make sure these match your code: import.meta.env.VITE_*
+      # ✅ IMPORTANT: Vite reads env at BUILD time (import.meta.env.VITE_*)
       - name: Build
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
@@ -35,7 +35,7 @@ jobs:
           VITE_GDRIVE_FOLDER_ID_EVENTS: ${{ secrets.VITE_GDRIVE_FOLDER_ID_EVENTS }}
           VITE_GDRIVE_FOLDER_ID_POSTERS: ${{ secrets.VITE_GDRIVE_FOLDER_ID_POSTERS }}
 
-          # ✅ FIX: your code uses VITE_GOOGLE_CALENDAR_ID (not VITE_CALENDAR_ID)
+          # ✅ your code uses VITE_GOOGLE_CALENDAR_ID (not VITE_CALENDAR_ID)
           VITE_GOOGLE_CALENDAR_ID: ${{ secrets.VITE_GOOGLE_CALENDAR_ID }}
 
           VITE_JOT_FORM_ID: ${{ secrets.VITE_JOT_FORM_ID }}
@@ -47,9 +47,41 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SBHT_SSH_KEY }}
 
-      - name: Deploy to VPS
+      - name: Add host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "${{ secrets.SBHT_HOST }}" >> ~/.ssh/known_hosts
+
+      # ✅ Ensure destination exists (prevents rsync mkdir errors)
+      - name: Ensure web root exists on VPS
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SBHT_USER }}@${{ secrets.SBHT_HOST }} << 'SSH'
+            set -e
+            mkdir -p /home/sbht/htdocs/sbht.thedesigndynasty.com
+          SSH
+
+      # ✅ Deploy dist/ but DO NOT delete backend /api folder
+      - name: Deploy to VPS (protect /api)
         run: |
           rsync -avz --delete \
             -e "ssh -o StrictHostKeyChecking=no" \
+            --exclude 'api/' \
+            --exclude '.well-known/' \
+            --exclude 'cgi-bin/' \
             dist/ \
             ${{ secrets.SBHT_USER }}@${{ secrets.SBHT_HOST }}:/home/sbht/htdocs/sbht.thedesigndynasty.com/
+
+      # ✅ Optional sanity check
+      - name: Verify deployment
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SBHT_USER }}@${{ secrets.SBHT_HOST }} << 'SSH'
+            set -e
+            test -f /home/sbht/htdocs/sbht.thedesigndynasty.com/index.html
+            echo "OK: index.html exists."
+            # Confirm api folder still exists (should not be deleted)
+            if [ -d /home/sbht/htdocs/sbht.thedesigndynasty.com/api ]; then
+              echo "OK: /api preserved."
+            else
+              echo "WARNING: /api not found (if backend is deployed, investigate)."
+            fi
+          SSH
