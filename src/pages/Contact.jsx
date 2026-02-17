@@ -170,6 +170,13 @@ ${formData.details}`;
 
   return (
     <div className="min-h-screen bg-transparent overflow-x-hidden relative">
+                <div className="absolute w-[600px] h-[600px] bottom-[20%] opacity-[.2] right-[-350px] z-8">
+            <img
+              src="/assets/rotatebg.png"
+              alt=""
+              className="w-[100%] h-[100%] spin-slow"
+            />
+          </div>
       {/* Header Section */}
       <section className="bg-orange-50/95 backdrop-blur-sm py-12 px-4">
         <motion.div
@@ -218,7 +225,7 @@ ${formData.details}`;
                 </div>
               </div>
 
-              <div className="h-80 w-full rounded-xl shadow-lg overflow-hidden">
+              <div className="h-80 w-full rounded-xl shadow-lg overflow-hidden relative ">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3057.907516940122!2d-85.99152082559179!3d39.9658203829624!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8814cb4d328b07dd%3A0xb1312d67149b9c93!2sSri%20Bhaktha%20Hanuman%20Temple%20%26%20Cultural%20Center!5e0!3m2!1sen!2sin!4v1770049630777!5m2!1sen!2sin"
                   frameBorder="0"
