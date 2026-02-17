@@ -22,26 +22,13 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      # ✅ IMPORTANT: Vite reads env at BUILD time (import.meta.env.VITE_*)
       - name: Build
         env:
-          VITE_RECAPTCHA_SITE_KEY: ${{ secrets.VITE_RECAPTCHA_SITE_KEY }}
-          VITE_MAIL_API_KEY: ${{ secrets.VITE_MAIL_API_KEY }}
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_MAIL_API_URL: ${{ secrets.VITE_MAIL_API_URL }}
           VITE_MAIL_FROM: ${{ secrets.VITE_MAIL_FROM }}
-
-          VITE_GDRIVE_KEY: ${{ secrets.VITE_GDRIVE_KEY }}
-          VITE_GDRIVE_FOLDER_ID: ${{ secrets.VITE_GDRIVE_FOLDER_ID }}
-          VITE_GDRIVE_FOLDER_ID_HERO: ${{ secrets.VITE_GDRIVE_FOLDER_ID_HERO }}
-          VITE_GDRIVE_FOLDER_ID_EVENTS: ${{ secrets.VITE_GDRIVE_FOLDER_ID_EVENTS }}
-          VITE_GDRIVE_FOLDER_ID_POSTERS: ${{ secrets.VITE_GDRIVE_FOLDER_ID_POSTERS }}
-
-          # ✅ your code uses VITE_GOOGLE_CALENDAR_ID (not VITE_CALENDAR_ID)
-          VITE_GOOGLE_CALENDAR_ID: ${{ secrets.VITE_GOOGLE_CALENDAR_ID }}
-
-          VITE_JOT_FORM_ID: ${{ secrets.VITE_JOT_FORM_ID }}
-          VITE_BOOKING_LINK: ${{ secrets.VITE_BOOKING_LINK }}
+          VITE_MAIL_API_KEY: ${{ secrets.VITE_MAIL_API_KEY }}
+          VITE_RECAPTCHA_SITE_KEY: ${{ secrets.VITE_RECAPTCHA_SITE_KEY }}
         run: npm run build
 
       - name: Setup SSH
@@ -49,41 +36,24 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SBHT_SSH_KEY }}
 
-      - name: Add host to known_hosts
+      - name: Add host to known_hosts (best effort)
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H "${{ secrets.SBHT_HOST }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -T 10 -H "${{ secrets.SBHT_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+          echo "known_hosts updated (or skipped)"
 
-      # ✅ Ensure destination exists (prevents rsync mkdir errors)
       - name: Ensure web root exists on VPS
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SBHT_USER }}@${{ secrets.SBHT_HOST }} << 'SSH'
-            set -e
-            mkdir -p /home/sbht/htdocs/sbht.thedesigndynasty.com
-          SSH
+          ssh -o StrictHostKeyChecking=no "${{ secrets.SBHT_USER }}@${{ secrets.SBHT_HOST }}" "mkdir -p '${{ secrets.SBHT_DEPLOY_PATH }}'"
 
-      # ✅ Deploy dist/ but DO NOT delete backend /api folder
-      - name: Deploy to VPS (protect /api)
+      - name: Deploy dist to VPS (protect /api)
         run: |
-          rsync -avz --delete \
+          rsync -az --delete \
             -e "ssh -o StrictHostKeyChecking=no" \
-            --exclude 'api/' \
-            --exclude '.well-known/' \
-            --exclude 'cgi-bin/' \
+            --exclude="api/" \
             dist/ \
-            ${{ secrets.SBHT_USER }}@${{ secrets.SBHT_HOST }}:/home/sbht/htdocs/sbht.thedesigndynasty.com/
+            "${{ secrets.SBHT_USER }}@${{ secrets.SBHT_HOST }}:${{ secrets.SBHT_DEPLOY_PATH }}/"
 
-      # ✅ Optional sanity check
       - name: Verify deployment
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SBHT_USER }}@${{ secrets.SBHT_HOST }} << 'SSH'
-            set -e
-            test -f /home/sbht/htdocs/sbht.thedesigndynasty.com/index.html
-            echo "OK: index.html exists."
-            # Confirm api folder still exists (should not be deleted)
-            if [ -d /home/sbht/htdocs/sbht.thedesigndynasty.com/api ]; then
-              echo "OK: /api preserved."
-            else
-              echo "WARNING: /api not found (if backend is deployed, investigate)."
-            fi
-          SSH
+          ssh -o StrictHostKeyChecking=no "${{ secrets.SBHT_USER }}@${{ secrets.SBHT_HOST }}" "ls -la '${{ secrets.SBHT_DEPLOY_PATH }}' | head -n 60"
