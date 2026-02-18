@@ -665,9 +665,74 @@ export default function HomePage() {
               {/* LEFT SIDE – CALENDAR */}
               <div className="w-full lg:w-1/3">
                 <div className="p-4 rounded-xl shadow-lg border bg-white relative overflow-hidden">
-                  <a class="oWHwWc" target="_blank" title="Open Calendar, Temple Events in new window" aria-label="Open Calendar, Temple Events in new window" href="https://calendar.google.com/calendar/u/0/embed?src=hanumantempleindiana@gmail.com&ctz=America/Indiana/Indianapolis"><svg class="hmuWb" viewBox="0 0 24 24" focusable="false" style={{width:"50px",height:"50px",display:"flex",alignItems:"center",justifyContent:"center",position:"absolute",right:"10px",top:"10px",background:"#0000002d",padding:"10px",color:"white"}}><path d="M0 0h24v24H0z" fill="none"></path><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path></svg></a>
-                  <iframe src="https://calendar.google.com/calendar/u/0/embed?src=hanumantempleindiana@gmail.com&ctz=America/Indiana/Indianapolis&mode=AGENDA" frameborder="0" height={500} width="100%" allowfullscreen></iframe>
-                  {/* <CalendarMini calendarId={calendarId} height={500} /> */}
+                 {/*  <a class="oWHwWc" target="_blank" title="Open Calendar, Temple Events in new window" aria-label="Open Calendar, Temple Events in new window" href="https://calendar.google.com/calendar/u/0/embed?src=hanumantempleindiana@gmail.com&ctz=America/Indiana/Indianapolis"><svg class="hmuWb" viewBox="0 0 24 24" focusable="false" style={{width:"50px",height:"50px",display:"flex",alignItems:"center",justifyContent:"center",position:"absolute",right:"10px",top:"10px",background:"#0000002d",padding:"10px",color:"white"}}><path d="M0 0h24v24H0z" fill="none"></path><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path></svg></a>
+<iframe src="https://calendar.google.com/calendar/u/0/embed?src=hanumantempleindiana@gmail.com&ctz=America/Indiana/Indianapolis&mode=AGENDA" frameborder="0" height={500} width="100%" allowfullscreen></iframe> */}
+{(() => {
+  const ctz = "America/Indiana/Indianapolis";
+  const src = encodeURIComponent(calendarId);
+
+  // Build today's date in YYYYMMDD (local browser time)
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = pad2(now.getMonth() + 1);
+  const d = pad2(now.getDate());
+  const ymd = `${y}${m}${d}`;
+
+  // Force "daily" by showing agenda for ONLY today (start=end)
+  const embedUrl =
+    `https://calendar.google.com/calendar/embed?` +
+    `src=${src}&ctz=${ctz}&mode=AGENDA&dates=${ymd}/${ymd}` +
+    `&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0`;
+
+  const openUrl = `https://calendar.google.com/calendar/u/0/r/day?cid=${src}`;
+
+  return (
+    <>
+      <a
+        className="oWHwWc"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Open Calendar, Temple Events in new window"
+        aria-label="Open Calendar, Temple Events in new window"
+        href={openUrl}
+      >
+        <svg
+          className="hmuWb"
+          viewBox="0 0 24 24"
+          focusable="false"
+          style={{
+            width: "50px",
+            height: "50px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "absolute",
+            right: "10px",
+            top: "10px",
+            background: "#0000002d",
+            padding: "10px",
+            color: "white",
+          }}
+        >
+          <path d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path>
+        </svg>
+      </a>
+
+      <iframe
+        src={embedUrl}
+        frameBorder="0"
+        height={500}
+        width="100%"
+        allowFullScreen
+        title="Temple Calendar"
+      />
+    </>
+  );
+})()}
+
+
                 </div>
               </div>
 
