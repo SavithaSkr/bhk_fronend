@@ -99,7 +99,8 @@ export default function Footer() {
 
             <div className="flex gap-3 mt-4">
               <a
-                href="#"
+                href="https://www.facebook.com/p/Hanuman-Temple-Indiana-61578246722605/" target="_blank"
+  rel="noopener noreferrer"
                 className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center hover:bg-[#1877F2] transition-colors"
               >
                 <Facebook className="w-4 h-4" />
@@ -111,7 +112,8 @@ export default function Footer() {
                 <Instagram className="w-4 h-4" />
               </a>
               <a
-                href="#"
+                href="https://www.youtube.com/@SriBhakthaHanumanTemple" target="_blank"
+  rel="noopener noreferrer"
                 className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center hover:bg-[#FF0000] transition-colors"
               >
                 <Youtube className="w-4 h-4" />
