@@ -57,6 +57,7 @@ jobs:
           VITE_GDRIVE_FOLDER_ID_EVENTS: ${{ secrets.VITE_GDRIVE_FOLDER_ID_EVENTS }}
           VITE_GDRIVE_FOLDER_ID_HERO: ${{ secrets.VITE_GDRIVE_FOLDER_ID_HERO }}
           VITE_MYPANCHANG_LOCID: ${{ secrets.VITE_MYPANCHANG_LOCID }}
+          VITE_JOT_FORM_ID: ${{ secrets.VITE_JOT_FORM_ID }}
 
         run: npm run build
 
