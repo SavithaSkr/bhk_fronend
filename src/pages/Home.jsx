@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import MyPanchangamHomeWidget from "../components/temple/MyPanchangamHomeWidget.jsx";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../utils/createPageUrl.js"; // Updated import path
 import { GoogleDriveImage, HeroImage, Events } from "../services/entities.js"; // Updated import path for API calls
@@ -372,6 +373,8 @@ export default function HomePage() {
             </motion.div>
           </div>
         </section>
+        {/* ✅ Panchangam — best position: directly below Hero */}
+        <MyPanchangamHomeWidget />
 
         {/* Temple Services Section */}
         <section className="py-16 px-4 z-30 relative">

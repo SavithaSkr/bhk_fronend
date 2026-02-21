@@ -21,7 +21,7 @@
 
   /* Fonts */
   --font-family-heading: "Roboto Slab", serif !important;
-  /* --font-family-body: "Inter", sans-serif; */
+  --font-family-body: "ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji;
 
   /* UI Elements */
   --border-radius-card: 0.75rem; /* 12px */
