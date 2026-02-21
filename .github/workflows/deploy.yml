@@ -22,14 +22,42 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      # ✅ Optional debug: confirms secrets exist (does NOT print values)
+      - name: Check required env vars (presence only)
+        run: |
+          node -e "const req=[
+            'VITE_GDRIVE_KEY',
+            'VITE_GDRIVE_FOLDER_ID',
+            'VITE_GDRIVE_FOLDER_ID_EVENTS',
+            'VITE_GDRIVE_FOLDER_ID_HERO',
+            'VITE_MYPANCHANG_LOCID'
+          ]; const missing=req.filter(k=>!process.env[k]); 
+          if(missing.length){console.error('Missing secrets:', missing.join(', ')); process.exit(1);}
+          console.log('All required secrets are present ✅');"
+        env:
+          VITE_GDRIVE_KEY: ${{ secrets.VITE_GDRIVE_KEY }}
+          VITE_GDRIVE_FOLDER_ID: ${{ secrets.VITE_GDRIVE_FOLDER_ID }}
+          VITE_GDRIVE_FOLDER_ID_EVENTS: ${{ secrets.VITE_GDRIVE_FOLDER_ID_EVENTS }}
+          VITE_GDRIVE_FOLDER_ID_HERO: ${{ secrets.VITE_GDRIVE_FOLDER_ID_HERO }}
+          VITE_MYPANCHANG_LOCID: ${{ secrets.VITE_MYPANCHANG_LOCID }}
+
       - name: Build
         env:
+          # ✅ Existing
           VITE_GOOGLE_CALENDAR_ID: ${{ secrets.VITE_GOOGLE_CALENDAR_ID }}
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_MAIL_API_URL: ${{ secrets.VITE_MAIL_API_URL }}
           VITE_MAIL_FROM: ${{ secrets.VITE_MAIL_FROM }}
           VITE_MAIL_API_KEY: ${{ secrets.VITE_MAIL_API_KEY }}
           VITE_RECAPTCHA_SITE_KEY: ${{ secrets.VITE_RECAPTCHA_SITE_KEY }}
+
+          # ✅ Add missing Drive + Panchang vars (this is the fix)
+          VITE_GDRIVE_KEY: ${{ secrets.VITE_GDRIVE_KEY }}
+          VITE_GDRIVE_FOLDER_ID: ${{ secrets.VITE_GDRIVE_FOLDER_ID }}
+          VITE_GDRIVE_FOLDER_ID_EVENTS: ${{ secrets.VITE_GDRIVE_FOLDER_ID_EVENTS }}
+          VITE_GDRIVE_FOLDER_ID_HERO: ${{ secrets.VITE_GDRIVE_FOLDER_ID_HERO }}
+          VITE_MYPANCHANG_LOCID: ${{ secrets.VITE_MYPANCHANG_LOCID }}
+
         run: npm run build
 
       - name: Setup SSH
