@@ -5,6 +5,10 @@ on:
     branches: ["main"]
   workflow_dispatch:
 
+concurrency:
+  group: sbht-frontend-deploy
+  cancel-in-progress: true
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -22,7 +26,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      # ✅ Optional debug: confirms secrets exist (does NOT print values)
+      # ✅ Debug: confirms REQUIRED env vars exist (presence only; no values printed)
       - name: Check required env vars (presence only)
         run: |
           node -e "const req=[
@@ -30,28 +34,35 @@ jobs:
             'VITE_GDRIVE_FOLDER_ID',
             'VITE_GDRIVE_FOLDER_ID_EVENTS',
             'VITE_GDRIVE_FOLDER_ID_HERO',
-            'VITE_MYPANCHANG_LOCID'
-          ]; const missing=req.filter(k=>!process.env[k]); 
+            'VITE_MYPANCHANG_LOCID',
+            'VITE_MAIL_API_URL',
+            'VITE_MAIL_API_KEY',
+            'VITE_RECAPTCHA_SITE_KEY'
+          ]; const missing=req.filter(k=>!process.env[k]);
           if(missing.length){console.error('Missing secrets:', missing.join(', ')); process.exit(1);}
-          console.log('All required secrets are present ✅');"
+          console.log('All required env vars are present ✅');"
         env:
           VITE_GDRIVE_KEY: ${{ secrets.VITE_GDRIVE_KEY }}
           VITE_GDRIVE_FOLDER_ID: ${{ secrets.VITE_GDRIVE_FOLDER_ID }}
           VITE_GDRIVE_FOLDER_ID_EVENTS: ${{ secrets.VITE_GDRIVE_FOLDER_ID_EVENTS }}
           VITE_GDRIVE_FOLDER_ID_HERO: ${{ secrets.VITE_GDRIVE_FOLDER_ID_HERO }}
           VITE_MYPANCHANG_LOCID: ${{ secrets.VITE_MYPANCHANG_LOCID }}
-
-      - name: Build
-        env:
-          # ✅ Existing
-          VITE_GOOGLE_CALENDAR_ID: ${{ secrets.VITE_GOOGLE_CALENDAR_ID }}
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_MAIL_API_URL: ${{ secrets.VITE_MAIL_API_URL }}
-          VITE_MAIL_FROM: ${{ secrets.VITE_MAIL_FROM }}
           VITE_MAIL_API_KEY: ${{ secrets.VITE_MAIL_API_KEY }}
           VITE_RECAPTCHA_SITE_KEY: ${{ secrets.VITE_RECAPTCHA_SITE_KEY }}
 
-          # ✅ Add missing Drive + Panchang vars (this is the fix)
+      - name: Build
+        env:
+          # Existing
+          VITE_GOOGLE_CALENDAR_ID: ${{ secrets.VITE_GOOGLE_CALENDAR_ID }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+          # ✅ Mail env (your values)
+          VITE_MAIL_API_URL: ${{ secrets.VITE_MAIL_API_URL }}
+          VITE_MAIL_API_KEY: ${{ secrets.VITE_MAIL_API_KEY }}
+          VITE_RECAPTCHA_SITE_KEY: ${{ secrets.VITE_RECAPTCHA_SITE_KEY }}
+
+          # Drive + Panchang
           VITE_GDRIVE_KEY: ${{ secrets.VITE_GDRIVE_KEY }}
           VITE_GDRIVE_FOLDER_ID: ${{ secrets.VITE_GDRIVE_FOLDER_ID }}
           VITE_GDRIVE_FOLDER_ID_EVENTS: ${{ secrets.VITE_GDRIVE_FOLDER_ID_EVENTS }}
@@ -66,24 +77,40 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SBHT_SSH_KEY }}
 
-      - name: Add host to known_hosts (best effort)
+      - name: Add host to known_hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -T 10 -H "${{ secrets.SBHT_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
-          echo "known_hosts updated (or skipped)"
 
       - name: Ensure web root exists on VPS
         run: |
-          ssh -o StrictHostKeyChecking=no "${{ secrets.SBHT_USER }}@${{ secrets.SBHT_HOST }}" "mkdir -p '${{ secrets.SBHT_DEPLOY_PATH }}'"
+          ssh "${{ secrets.SBHT_USER }}@${{ secrets.SBHT_HOST }}" "mkdir -p '${{ secrets.SBHT_DEPLOY_PATH }}'"
 
       - name: Deploy dist to VPS (protect /api)
         run: |
           rsync -az --delete \
-            -e "ssh -o StrictHostKeyChecking=no" \
+            -e "ssh" \
             --exclude="api/" \
             dist/ \
             "${{ secrets.SBHT_USER }}@${{ secrets.SBHT_HOST }}:${{ secrets.SBHT_DEPLOY_PATH }}/"
 
-      - name: Verify deployment
+      # ✅ Post-deploy verification: confirms the deployed JS contains the Mail API URL
+      - name: Verify mail API URL is embedded in deployed build
         run: |
-          ssh -o StrictHostKeyChecking=no "${{ secrets.SBHT_USER }}@${{ secrets.SBHT_HOST }}" "ls -la '${{ secrets.SBHT_DEPLOY_PATH }}' | head -n 60"
+          ssh "${{ secrets.SBHT_USER }}@${{ secrets.SBHT_HOST }}" << 'SSH'
+            set -e
+            DEPLOY_PATH="${{ secrets.SBHT_DEPLOY_PATH }}"
+            echo "Checking deployed assets in: $DEPLOY_PATH"
+
+            # Confirm html exists
+            test -f "$DEPLOY_PATH/index.html"
+
+            # Confirm mail-api URL string exists somewhere in built assets
+            if ! grep -R "sbht.thedesigndynasty.com/api/mail/mail-api.php" "$DEPLOY_PATH" -n >/dev/null 2>&1; then
+              echo "ERROR: Mail API URL not found in deployed build output."
+              echo "This means VITE_MAIL_API_URL did not get embedded during build."
+              exit 1
+            fi
+
+            echo "OK: Mail API URL found in deployed build ✅"
+          SSH
