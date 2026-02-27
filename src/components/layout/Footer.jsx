@@ -70,7 +70,7 @@ export default function Footer() {
               </div>
               <div className="mt-3">
                 <p className="font-medium">Weekends</p>
-                <p className="text-md">08:30 AM - 02:30 PM & 05:30 PM - 08:30 PM</p>
+                <p className="text-md">09:00 AM - 02:30 PM & 06:00 PM - 08:30 PM</p>
               </div>
             </div>
           </div>
