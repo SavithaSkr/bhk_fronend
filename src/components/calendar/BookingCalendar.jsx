@@ -67,9 +67,7 @@ export default function BookingCalendar({
             </div>
           ) : null}
 
-          <div className="mt-3 text-xs text-gray-500">
-            Debug: Calendar ID = <span className="font-mono">{calendarId}</span>
-          </div>
+
         </>
       )}
     </div>

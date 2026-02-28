@@ -286,7 +286,7 @@ export default function HomePage() {
                           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                             <span className="text-gray-700 font-medium">Weekends:</span>
                             <span className="text-orange-600 font-semibold">
-                              9AM–11:30AM, 6PM–8:30PM
+                              9AM–02:30PM, 5:30PM–8:30PM
                             </span>
                           </div>
                         </div>

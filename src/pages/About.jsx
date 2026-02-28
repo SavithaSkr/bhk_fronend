@@ -301,7 +301,7 @@ export default function AboutPage() {
                       <strong>Temple Hours:</strong>
                     </p>
                     <p>Weekdays: 09:00 AM - 11:30 AM, 6:00 PM - 8:30 PM</p>
-                    <p>Weekends: 08:30 AM - 02:30 PM, 5:30 PM - 8:30 PM</p>
+                    <p>Weekends: 09:00 AM - 02:30 PM, 5:30 PM - 8:30 PM</p>
                   </div>
                 </div>
               </div>
