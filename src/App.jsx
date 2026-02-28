@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./Layout.jsx";
+import ScrollToTop from "./components/ScrollToTop.jsx";
 
 import HomePage from "./pages/Home.jsx";
 import AboutPage from "./pages/About.jsx";
@@ -16,6 +17,7 @@ import GarlandPage from "./pages/Garland.jsx";
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         <Route
           path="/"

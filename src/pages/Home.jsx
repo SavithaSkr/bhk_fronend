@@ -265,7 +265,7 @@ export default function HomePage() {
               {/* ✅ CLEAN + MINIMAL (NO CONTACT) */}
               <div className="max-w-xl mx-auto lg:mx-0">
                 <div className="rounded-2xl bg-white/90 backdrop-blur-sm border border-gray-200 shadow-sm px-5 py-4">
-                  <div className="grid gap-4 md:grid-cols-2">
+                  <div className="grid gap-4 md:grid-cols-2 items-start">
                     {/* Hours */}
                     <div className="flex items-start gap-3">
                       <div className="shrink-0 rounded-xl bg-orange-50 p-2">
@@ -273,7 +273,7 @@ export default function HomePage() {
                       </div>
 
                       <div className="min-w-0">
-                        <div className="text-sm font-semibold text-gray-800">Hours</div>
+                        <div className="text-sm font-semibold text-gray-800 text-start">Hours</div>
 
                         <div className="mt-1 space-y-1 text-sm">
                           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -294,12 +294,12 @@ export default function HomePage() {
                     </div>
 
                     {/* Location */}
-                    <div className="flex items-start gap-3 md:justify-end">
+                    <div className="flex items-start gap-3">
                       <div className="shrink-0 rounded-xl bg-orange-50 p-2">
                         <MapPin className="h-5 w-5 text-orange-500" />
                       </div>
 
-                      <div className="min-w-0 md:text-right">
+                      <div className="min-w-0">
                         <div className="text-sm font-semibold text-gray-800">Location</div>
 
                         <a
