@@ -65,7 +65,7 @@ export default function PujaBookingPage() {
           >
             <div className="bg-white/90 backdrop-blur-sm shadow-xl rounded-lg p-1 md:p-2">
               <iframe
-                src="https://docs.google.com/forms/d/e/1FAIpQLSdglNSPqhI53wQk6w44C58mLOXJkTixstHKNpBQmvgylHdLFw/viewform?usp=dialog"
+                src="https://docs.google.com/forms/d/e/1FAIpQLSdo6dM4zl_Q3BwXKY0WUNJpHet8ZA2XEQjHIr2pt2uYzVK6rg/viewform?embedded=true"
                 width="100%"
                 height="1500"
                 frameBorder="0"
