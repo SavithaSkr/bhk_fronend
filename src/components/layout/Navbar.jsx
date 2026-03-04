@@ -23,7 +23,7 @@ export default function Navbar() {
   const bookingOptions = [
     { name: "Puja Booking", url: createPageUrl("PujaBooking") },
     { name: "Priest Booking", url: createPageUrl("PriestBooking") },
-    { name: "Special Pooja Booking", url: createPageUrl("SpecialPoojaBooking") },
+    { name: "Special Pooja Sponsorship", url: createPageUrl("SpecialPoojaBooking") },
   ];
 
   const allNavigation = [
