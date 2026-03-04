@@ -67,7 +67,7 @@ export default function SpecialPoojaBookingPage() {
           >
             <div className="bg-white/90 backdrop-blur-sm shadow-xl rounded-lg p-1 md:p-2">
               <iframe
-                src="https://docs.google.com/forms/d/e/1FAIpQLSc1Ze8bmEDJ6D1g70TcMIx43oUyIieUHvN3UAdgsHvDKpailA/viewform?embedded=true"
+                src="https://pci.jotform.com/form/252885106919063"
                 width="100%"
                 height="1500"
                 frameBorder="0"
